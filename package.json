@@ -1,0 +1,53 @@
+{
+	"$schema": "https://json.schemastore.org/package.json",
+	"name": "github-workflow-dispatch-proxy",
+	"version": "0.0.0",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/abinnoivison/github-workflow-dispatch-proxy"
+	},
+	"license": "Apache-2.0",
+	"author": {
+		"name": "AB INNOVISION GmbH",
+		"email": "info@abinnovision.com",
+		"url": "https://abinnovision.com/"
+	},
+	"scripts": {
+		"check": "yarn format:check && yarn lint:check",
+		"fix": "yarn format:fix && yarn lint:fix",
+		"format:check": "prettier --check '{{src,test,cypress}/**/*,*}.{js,jsx,ts,tsx,json,json5,yml,yaml,md}'",
+		"format:fix": "prettier --write '{{src,test,cypress}/**/*,*}.{js,jsx,ts,tsx,json,json5,yml,yaml,md}'",
+		"lint:check": "eslint '{{src,test,cypress}/**/*,*}.{js,jsx,ts,tsx}'",
+		"lint:fix": "eslint '{{src,test,cypress}/**/*,*}.{js,jsx,ts,tsx}' --fix",
+		"prepare": "husky"
+	},
+	"commitlint": {
+		"extends": [
+			"@abinnovision/commitlint-config"
+		]
+	},
+	"lint-staged": {
+		"{.github/**/*,*}.{json,json5,yaml,yml,md}": [
+			"prettier --write"
+		],
+		"**/package.json": [
+			"sort-package-json"
+		]
+	},
+	"prettier": "@abinnovision/prettier-config",
+	"devDependencies": {
+		"@abinnovision/commitlint-config": "^2.0.1",
+		"@abinnovision/eslint-config-base": "^2.0.0",
+		"@abinnovision/eslint-config-typescript": "^2.0.0",
+		"@abinnovision/prettier-config": "^2.0.0",
+		"@commitlint/cli": "^19.3.0",
+		"eslint": "^9.1.1",
+		"globals": "^15.0.0",
+		"husky": "^9.0.11",
+		"lint-staged": "^15.2.2",
+		"prettier": "^3.2.5",
+		"sort-package-json": "^2.10.0",
+		"typescript": "^5.4.5"
+	},
+	"packageManager": "yarn@4.1.1"
+}
