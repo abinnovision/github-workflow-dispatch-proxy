@@ -11,7 +11,7 @@ let _cachedConfig: z.infer<typeof configSchema> | null = null;
 const _logger = getLogger("utils/config");
 
 const baseSchema = z.object({
-	PORT: z.coerce.number().default(3003),
+	PORT: z.coerce.number().default(8080),
 	ORGANIZATION: z.string().optional(),
 
 	GH_ISSUER: z.string().default("https://token.actions.githubusercontent.com"),
