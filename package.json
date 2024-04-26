@@ -21,6 +21,8 @@
 		"lint:check": "eslint '{{src,test,cypress}/**/*,*}.{js,jsx,ts,tsx}'",
 		"lint:fix": "eslint '{{src,test,cypress}/**/*,*}.{js,jsx,ts,tsx}' --fix",
 		"prepare": "husky",
+		"sort:check": "sort-package-json --check",
+		"sort:fix": "sort-package-json",
 		"start:dev": "dotenv -v NODE_ENV=development -c development -- nodemon src/bootstrap.ts",
 		"test-integration": "vitest --run --coverage --config vitest.config.integration.mts",
 		"test-integration:watch": "vitest --config vitest.config.integration.mts",
