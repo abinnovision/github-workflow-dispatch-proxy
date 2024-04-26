@@ -3,6 +3,7 @@ import { Server } from "hyper-express";
 import { dispatchHandlerController } from "./dispatch-handler/controller";
 import { getConfig } from "./utils/config";
 import { getLogger } from "./utils/logger";
+import { getOpenApiSpec } from "./utils/openapi";
 
 /**
  * Describes the result of the bootstrap function.
@@ -31,6 +32,20 @@ export const bootstrap = (async (): Promise<BootstrapResult> => {
 
 	// Register the handler controller.
 	server.post("/dispatch", dispatchHandlerController);
+
+	// Serve the OpenAPI specification as a static file.
+	server.get("/openapi.yaml", async (_, res) => {
+		const content = await getOpenApiSpec();
+
+		res
+			.status(200)
+			.header(
+				"cache-control",
+				"public, max-age 172800, stale-while-revalidate 172800"
+			)
+			.header("content-type", "application/yaml")
+			.send(content);
+	});
 
 	// Set up a global not found handler
 	server.set_not_found_handler((_, res) => {
