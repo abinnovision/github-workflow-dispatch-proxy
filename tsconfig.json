@@ -1,0 +1,20 @@
+{
+	"compilerOptions": {
+		"outDir": "./dist",
+		"target": "ES2017",
+		"lib": ["esnext"],
+		"allowJs": false,
+		"skipLibCheck": true,
+		"strict": true,
+		"forceConsistentCasingInFileNames": true,
+		"noEmit": true,
+		"esModuleInterop": true,
+		"module": "NodeNext",
+		"moduleResolution": "NodeNext",
+		"resolveJsonModule": true,
+		"isolatedModules": true,
+		"incremental": true
+	},
+	"include": ["src/**/*.ts", "test/**/*.ts", "vitest.config.ts"],
+	"exclude": ["node_modules"]
+}
