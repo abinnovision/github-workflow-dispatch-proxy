@@ -2639,13 +2639,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"env-var@npm:^7.4.1":
-  version: 7.4.1
-  resolution: "env-var@npm:7.4.1"
-  checksum: 10/95167e492a85e9e5924dd5b921e608e042d81d6856b750bb9b7fad5ba7f0252ad3f348ba3fc9e2d15ec53b832deac5764934297cbd5000880517b786f1ba3795
-  languageName: node
-  linkType: hard
-
 "err-code@npm:^2.0.2":
   version: 2.0.3
   resolution: "err-code@npm:2.0.3"
@@ -3534,7 +3527,6 @@ __metadata:
     "@types/supertest": "npm:^6.0.2"
     "@vitest/coverage-v8": "npm:^1.5.2"
     dotenv-cli: "npm:^7.4.1"
-    env-var: "npm:^7.4.1"
     eslint: "npm:8"
     get-port-please: "npm:^3.1.2"
     globals: "npm:^15.0.0"
