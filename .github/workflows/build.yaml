@@ -1,0 +1,151 @@
+name: Build
+
+on:
+  pull_request_target:
+    branches:
+      - master
+  push:
+    branches:
+      - master
+
+jobs:
+  configure:
+    name: Configure
+    runs-on: ubuntu-22.04
+    timeout-minutes: 4
+    outputs:
+      commit-sha: ${{ env.COMMIT_SHA }}
+    steps:
+      - name: Evaluate commit
+        run: |
+          if [[ "${{ github.event_name }}" == "pull_request_target" ]]; then
+              echo "PR is #${{ github.event.number }}..."
+              echo "PR Head SHA is ${{ github.event.pull_request.head.sha }}..."
+              echo "COMMIT_SHA=${{ github.event.pull_request.head.sha }}" >> $GITHUB_ENV
+          else
+              echo "Head SHA is ${{ github.sha }}..."
+              echo "COMMIT_SHA=${{ github.sha }}" >> $GITHUB_ENV
+          fi
+  check:
+    name: Check
+    runs-on: ubuntu-22.04
+    needs:
+      - configure
+    env:
+      # Avoid installing Cypress binary in this job, because it's not being used.
+      CYPRESS_INSTALL_BINARY: "0"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ needs.configure.outputs.commit-sha }}
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version-file: ".tool-versions"
+          cache: "yarn"
+      - name: Cache
+        uses: actions/cache@v3
+        with:
+          path: ${{ github.workspace }}/node_modules
+          key: dependencies-${{ runner.os }}-${{ github.run_id }}-${{ hashFiles('yarn.lock') }}
+          restore-keys: |
+            dependencies-${{ runner.os }}-${{ github.run_id }}-
+      - name: Install dependencies
+        run: yarn install --immutable
+      - name: Check
+        run: yarn run check
+      - name: Check Dependencies
+        run: |
+          yarn dedupe
+          git diff --exit-code --quiet yarn.lock || (echo "yarn.lock is not up to date, run 'yarn dedupe'" && exit 1)
+  build:
+    name: Build
+    runs-on: ubuntu-22.04
+    needs:
+      - configure
+      - check
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ needs.configure.outputs.commit-sha }}
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version-file: ".tool-versions"
+          cache: "yarn"
+      - name: Cache
+        uses: actions/cache@v3
+        with:
+          path: ${{ github.workspace }}/node_modules
+          key: dependencies-${{ runner.os }}-${{ github.run_id }}-${{ hashFiles('yarn.lock') }}
+          restore-keys: |
+            dependencies-${{ runner.os }}-${{ github.run_id }}-
+      - name: Install dependencies
+        run: yarn install --immutable
+      - name: Build
+        run: yarn build
+  test-unit:
+    name: Test (Unit)
+    runs-on: ubuntu-22.04
+    needs:
+      - configure
+      - build
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ needs.configure.outputs.commit-sha }}
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version-file: ".tool-versions"
+          cache: "yarn"
+      - name: Cache
+        uses: actions/cache@v3
+        with:
+          path: ${{ github.workspace }}/node_modules
+          key: dependencies-${{ runner.os }}-${{ github.run_id }}-${{ hashFiles('yarn.lock') }}
+          restore-keys: |
+            dependencies-${{ runner.os }}-${{ github.run_id }}-
+      - name: Install dependencies
+        run: yarn install --immutable
+      - name: Test
+        run: yarn test-unit
+  test-integration:
+    name: Test (Integration)
+    runs-on: ubuntu-22.04
+    needs:
+      - configure
+      - build
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ needs.configure.outputs.commit-sha }}
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version-file: ".tool-versions"
+          cache: "yarn"
+      - name: Cache
+        uses: actions/cache@v3
+        with:
+          path: ${{ github.workspace }}/node_modules
+          key: dependencies-${{ runner.os }}-${{ github.run_id }}-${{ hashFiles('yarn.lock') }}
+          restore-keys: |
+            dependencies-${{ runner.os }}-${{ github.run_id }}-
+      - name: Install dependencies
+        run: yarn install --immutable
+      - name: Test
+        run: yarn test-integration
+  release:
+    name: Release
+    uses: abinnovision/workflows/.github/workflows/release-please.yaml@master
+    secrets: inherit
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    with:
+      default-branch: master
+    needs:
+      - configure
