@@ -44,9 +44,7 @@ const builtInPolicyMapping = {
  */
 async function readPolicyFile(policyPath: string): Promise<ArrayBuffer> {
 	try {
-		return await fsp.readFile(
-			path.join(process.env.POLICY_DIR as string, policyPath)
-		);
+		return await fsp.readFile(policyPath);
 	} catch (error) {
 		_logger.error({ error }, "Failed to read policy file");
 
@@ -106,7 +104,12 @@ export async function evaluatePolicyForRequest(
 	if (config.POLICY === "custom") {
 		policyFile = await readPolicyFile(config.POLICY_PATH);
 	} else {
-		policyFile = await readPolicyFile(builtInPolicyMapping[config.POLICY_TYPE]);
+		policyFile = await readPolicyFile(
+			path.join(
+				process.env.POLICY_DIR as string,
+				builtInPolicyMapping[config.POLICY_TYPE]
+			)
+		);
 	}
 
 	const policy = await loadPolicy(policyFile);
