@@ -7,6 +7,7 @@ const path = require("path");
 module.exports = {
 	tsConfigFile: "tsconfig.build.json",
 	esbuild: {
+		outbase: "./",
 		entryPoints: ["src/bootstrap.ts"],
 		assetNames: "[dir]/[name]",
 		bundle: true,
@@ -15,6 +16,9 @@ module.exports = {
 		loader: {
 			".yaml": "text",
 			".node": "copy",
+		},
+		define: {
+			"process.env.POLICY_DIR": `"./policies"`,
 		},
 	},
 	postbuild: async () => {
@@ -26,7 +30,7 @@ module.exports = {
 			`uws_${process.platform}_${process.arch}_${process.versions.modules}.node`,
 		];
 
-		const dirPath = path.resolve(`dist/_.._/node_modules/uWebSockets.js/`);
+		const dirPath = path.resolve(`dist/node_modules/uWebSockets.js/`);
 
 		// Get all the available .node files.
 		const dirContent = await fsp.readdir(dirPath);
@@ -37,5 +41,7 @@ module.exports = {
 				await fsp.rm(path.resolve(dirPath, file), { recursive: true });
 			}
 		}
+
+		await (await import("cpy")).default("policies/*.wasm", "dist/policies/");
 	},
 };

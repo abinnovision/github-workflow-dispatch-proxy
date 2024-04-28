@@ -2,8 +2,11 @@ import {defineConfig} from "vitest/config";
 
 export default defineConfig({
 	assetsInclude: [
-		"**/*.yaml"
+		"**/*.yaml",
 	],
+	define: {
+		"process.env.POLICY_DIR": `"./policies"`,
+	},
 	test: {
 		include: ["src/**/*.spec.ts"],
 		globals: true,

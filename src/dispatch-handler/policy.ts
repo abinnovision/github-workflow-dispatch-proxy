@@ -1,4 +1,3 @@
-// @ts-ignore
 import { loadPolicy } from "@open-policy-agent/opa-wasm";
 import * as fsp from "fs/promises";
 import * as path from "path";
@@ -7,8 +6,7 @@ import z from "zod";
 import { getConfig } from "../utils/config";
 import { getLogger } from "../utils/logger";
 
-// @ts-ignore
-import type { LoadedPolicy } from "@open-policy-agent/opa-wasm/dist/types/opa";
+import type opa from "@open-policy-agent/opa-wasm";
 
 const policyInputSchemas = z.object({
 	config: z.record(z.string()),
@@ -34,8 +32,8 @@ const _logger = getLogger("handler/policy");
 
 // The built-in policies.
 const builtInPolicyMapping = {
-	allow_all: path.join(__dirname, "../../policies/allow_all.wasm"),
-	allow_org_wide: path.join(__dirname, "../../policies/allow_org_wide.wasm"),
+	allow_all: "allow_all.wasm",
+	allow_org_wide: "allow_org_wide.wasm",
 };
 
 /**
@@ -46,7 +44,9 @@ const builtInPolicyMapping = {
  */
 async function readPolicyFile(policyPath: string): Promise<ArrayBuffer> {
 	try {
-		return await fsp.readFile(policyPath);
+		return await fsp.readFile(
+			path.join(process.env.POLICY_DIR as string, policyPath)
+		);
 	} catch (error) {
 		_logger.error({ error }, "Failed to read policy file");
 
@@ -72,7 +72,7 @@ async function parsePolicyConfig(
 }
 
 async function evaluatePolicy(
-	policy: LoadedPolicy,
+	policy: opa.LoadedPolicy,
 	opts: PolicyInput
 ): Promise<boolean> {
 	try {

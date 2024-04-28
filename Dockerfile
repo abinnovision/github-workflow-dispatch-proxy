@@ -25,4 +25,4 @@ USER node
 ENV NODE_ENV=production
 
 EXPOSE 8080
-CMD ["node", "/app/dist/bootstrap.js"]
+CMD ["node", "/app/dist/src/bootstrap.js"]

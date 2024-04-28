@@ -19,6 +19,11 @@
 		"isolatedModules": true,
 		"incremental": true
 	},
-	"include": ["src/**/*.ts", "test/**/*.ts", "vitest.config.ts"],
+	"include": [
+		"src/**/*.ts",
+		"test/**/*.ts",
+		"vitest.config.*.ts",
+		"shims.d.ts"
+	],
 	"exclude": ["node_modules"]
 }
