@@ -2765,7 +2765,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"esbuild@npm:^0.20.1":
+"esbuild-node-tsc@npm:^2.0.5":
+  version: 2.0.5
+  resolution: "esbuild-node-tsc@npm:2.0.5"
+  dependencies:
+    yargs: "npm:^17.6.2"
+  peerDependencies:
+    esbuild: ">=0.13.0"
+    typescript: "*"
+  bin:
+    esbuild-node-tsc: dist/index.js
+    etsc: dist/index.js
+  checksum: 10/91f634401cafe85c6d295c2bbd120905e9910f0cd7b008f7ab55ddb28ffce9063f7419e6d4c094c5b8151976c14c054fc6b51b0419dda1afcfdcbe25463e8b01
+  languageName: node
+  linkType: hard
+
+"esbuild@npm:^0.20.1, esbuild@npm:^0.20.2":
   version: 0.20.2
   resolution: "esbuild@npm:0.20.2"
   dependencies:
@@ -3527,6 +3542,8 @@ __metadata:
     "@types/supertest": "npm:^6.0.2"
     "@vitest/coverage-v8": "npm:^1.5.2"
     dotenv-cli: "npm:^7.4.1"
+    esbuild: "npm:^0.20.2"
+    esbuild-node-tsc: "npm:^2.0.5"
     eslint: "npm:8"
     get-port-please: "npm:^3.1.2"
     globals: "npm:^15.0.0"
@@ -7132,7 +7149,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"yargs@npm:^17.0.0":
+"yargs@npm:^17.0.0, yargs@npm:^17.6.2":
   version: 17.7.2
   resolution: "yargs@npm:17.7.2"
   dependencies:

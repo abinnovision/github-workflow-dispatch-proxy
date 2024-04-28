@@ -1,3 +1,4 @@
 {
-	"watch": ["src/**/*"]
+	"watch": ["src/**/*"],
+	"exec": "etsc && node ./dist/src/bootstrap.js"
 }

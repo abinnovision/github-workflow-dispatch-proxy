@@ -1,4 +1,4 @@
-FROM node:20.11.0-alpine as installer
+FROM node:20.11.0-alpine as builder
 
 WORKDIR /app
 
@@ -12,9 +12,6 @@ RUN yarn install --immutable
 
 RUN yarn build
 
-# Remove all non-production dependencies
-RUN yarn workspaces focus --production
-
 FROM node:20.11.0-alpine as runner
 
 RUN apk update
@@ -22,9 +19,7 @@ RUN apk add --no-cache libc6-compat
 
 WORKDIR /app
 
-COPY --from=installer --chown=node:node /app/dist ./dist
-COPY --from=installer --chown=node:node /app/node_modules ./node_modules
-COPY --from=installer --chown=node:node /app/policies ./policies
+COPY --from=builder --chown=node:node /app/dist ./dist
 
 USER node
 ENV NODE_ENV=production
