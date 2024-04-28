@@ -4,12 +4,6 @@ import type { Logger } from "pino";
 
 const _logger = pino({
 	level: process.env.APP_LOG_LEVEL || "info",
-	transport: {
-		target: "pino-pretty",
-		options: {
-			colorize: true,
-		},
-	},
 });
 
 /**
