@@ -77,7 +77,7 @@ export const dispatchHandlerController: UserRouteHandler = async (req, res) => {
 	try {
 		idToken = await decodeIdToken(body.idToken);
 	} catch (e) {
-		_logger.debug({ error: e }, "Failed to decode ID token");
+		_logger.warn({ error: e }, "Failed to decode ID token");
 		return res
 			.status(400)
 			.header("content-type", responseContentType)
@@ -96,7 +96,7 @@ export const dispatchHandlerController: UserRouteHandler = async (req, res) => {
 				.json({ error: "Request blocked by policy" });
 		}
 	} catch (e) {
-		_logger.debug({ error: e }, "Failed to evaluate policy");
+		_logger.warn({ error: e }, "Failed to evaluate policy");
 		return res
 			.status(401)
 			.header("content-type", responseContentType)
@@ -110,6 +110,7 @@ export const dispatchHandlerController: UserRouteHandler = async (req, res) => {
 			inputs: body.inputs,
 		});
 	} catch (e) {
+		_logger.warn({ error: e }, "Failed to send workflow dispatch");
 		return res
 			.status(500)
 			.header("content-type", responseContentType)
