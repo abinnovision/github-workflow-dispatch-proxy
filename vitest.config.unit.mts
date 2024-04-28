@@ -1,6 +1,9 @@
 import {defineConfig} from "vitest/config";
 
 export default defineConfig({
+	assetsInclude: [
+		"**/*.yaml"
+	],
 	test: {
 		include: ["src/**/*.spec.ts"],
 		globals: true,
