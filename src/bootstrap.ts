@@ -48,6 +48,13 @@ export const bootstrap = (async (): Promise<BootstrapResult> => {
 			.send(content);
 	});
 
+	// Simple health check endpoint to verify the server is running.
+	server.get("/healthz", (_, res) => {
+		res.status(200).json({
+			message: "ok",
+		});
+	});
+
 	// Set up a global not found handler
 	server.set_not_found_handler((_, res) => {
 		res.status(404).json({
