@@ -20,13 +20,14 @@ interface BootstrapResult {
 	shutdown: () => void;
 }
 
+const logger = getLogger("bootstrap");
+
 // Main entrypoint to the application, where all the startup logic is defined.
 // This function is immediately invoked when the file is imported.
 // For testing purposes, the function is exported and provides some helpers.
 export const bootstrap = (async (): Promise<BootstrapResult> => {
 	// Load the configuration first to make sure it's valid.
 	const config = getConfig();
-	const logger = getLogger("bootstrap");
 
 	const server = new Server();
 
@@ -61,4 +62,7 @@ export const bootstrap = (async (): Promise<BootstrapResult> => {
 		server,
 		shutdown: () => server?.close(),
 	};
-})();
+})().catch((error) => {
+	logger.error({ error }, "Failed to start server");
+	process.exit(1);
+});
