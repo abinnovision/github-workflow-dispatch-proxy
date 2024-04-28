@@ -5,3 +5,8 @@ declare module "@open-policy-agent/opa-wasm" {
 	export const loadPolicy: typeof _loadPolicy;
 	export default opa;
 }
+
+declare module "*.yaml" {
+	const content: string;
+	export default content;
+}

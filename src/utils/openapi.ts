@@ -1,4 +1,3 @@
-// @ts-ignore
 import content from "../assets/openapi/openapi.yaml";
 
 /**
