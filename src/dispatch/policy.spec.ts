@@ -1,12 +1,15 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import type { evaluatePolicyForRequest } from "./policy";
+import type { evaluatePolicyForRequest, getPolicy } from "./policy";
 
 describe("handler/policy", () => {
-	let fn: typeof evaluatePolicyForRequest;
+	let getPolicyFn: typeof getPolicy;
+	let evaluatePolicyForRequestFn: typeof evaluatePolicyForRequest;
 
 	beforeEach(async () => {
-		fn = (await import("./policy.js")).evaluatePolicyForRequest;
+		const imported = await import("./policy.js");
+		getPolicyFn = imported.getPolicy;
+		evaluatePolicyForRequestFn = imported.evaluatePolicyForRequest;
 	});
 
 	afterEach(() => {
@@ -17,7 +20,7 @@ describe("handler/policy", () => {
 		vi.stubEnv("APP_GH_AUTH_TYPE", "token");
 		vi.stubEnv("APP_GH_AUTH_TOKEN", "token");
 
-		const result = await fn({
+		const result = await evaluatePolicyForRequestFn(await getPolicyFn(), {
 			target: {
 				owner: "abinnovison",
 				repository: "github-workflow-dispatch-proxy",
@@ -46,7 +49,7 @@ describe("handler/policy", () => {
 			vi.stubEnv("APP_POLICY_TYPE", "allow_org_wide");
 			vi.stubEnv("APP_POLICY_CONFIG", "organization=abinnovison");
 
-			const result = await fn({
+			const result = await evaluatePolicyForRequestFn(await getPolicyFn(), {
 				target: {
 					owner: "abinnovison",
 					repository: "github-workflow-dispatch-proxy",
@@ -74,7 +77,7 @@ describe("handler/policy", () => {
 			vi.stubEnv("APP_POLICY_TYPE", "allow_org_wide");
 			vi.stubEnv("APP_POLICY_CONFIG", "organization=abinnovison-test");
 
-			const result = await fn({
+			const result = await evaluatePolicyForRequestFn(await getPolicyFn(), {
 				target: {
 					owner: "abinnovison",
 					repository: "github-workflow-dispatch-proxy",
@@ -101,7 +104,7 @@ describe("handler/policy", () => {
 			vi.stubEnv("APP_GH_AUTH_TOKEN", "token");
 			vi.stubEnv("APP_POLICY_TYPE", "allow_org_wide");
 
-			const result = await fn({
+			const result = await evaluatePolicyForRequestFn(await getPolicyFn(), {
 				target: {
 					owner: "abinnovison",
 					repository: "github-workflow-dispatch-proxy",

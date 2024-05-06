@@ -4,11 +4,13 @@ import * as path from "path";
 import z from "zod";
 
 import { getConfig } from "../utils/config";
-import { getLogger } from "../utils/logger";
 
 import type opa from "@open-policy-agent/opa-wasm";
 
-const policyInputSchemas = z.object({
+/**
+ * Full schema which will be passed to the policy as context.
+ */
+const policyContextSchema = z.object({
 	config: z.record(z.string()),
 
 	target: z.object({
@@ -28,29 +30,11 @@ const policyInputSchemas = z.object({
 	}),
 });
 
-const _logger = getLogger("handler/policy");
-
 // The built-in policies.
 const builtInPolicyMapping = {
 	allow_all: "allow_all.wasm",
 	allow_org_wide: "allow_org_wide.wasm",
 };
-
-/**
- * Reads the policy file from the given path.
- *
- * @param policyPath The path to the policy file.
- * @returns The policy file as an ArrayBuffer.
- */
-async function readPolicyFile(policyPath: string): Promise<ArrayBuffer> {
-	try {
-		return await fsp.readFile(policyPath);
-	} catch (error) {
-		_logger.error({ error }, "Failed to read policy file");
-
-		throw error;
-	}
-}
 
 /**
  * Parses the policy configuration.
@@ -69,59 +53,108 @@ async function parsePolicyConfig(
 	return config;
 }
 
+/**
+ * Evaluates the given policy with the provided context.
+ * The context must be a valid object, according to the schema.
+ *
+ * @param policy The policy to evaluate.
+ * @param context The context to evaluate the policy with.
+ */
 async function evaluatePolicy(
 	policy: opa.LoadedPolicy,
-	opts: PolicyInput
+	context: z.infer<typeof policyContextSchema>
 ): Promise<boolean> {
+	// Validate whether the context is valid.
 	try {
-		await policyInputSchemas.parseAsync(opts);
+		await policyContextSchema.parseAsync(context);
 	} catch (error) {
-		_logger.error({ error }, "Policy input is not valid");
+		throw new PolicyError(
+			"Invalid context provided",
+			error instanceof Error ? error : undefined
+		);
 	}
 
-	const evaluationResult = policy.evaluate(opts);
+	let evaluationResult;
+	try {
+		evaluationResult = policy.evaluate(context);
+	} catch (error) {
+		throw new PolicyError(
+			"Failed to evaluate policy",
+			error instanceof Error ? error : undefined
+		);
+	}
 
 	const result = evaluationResult[0]?.result?.allow ?? undefined;
 
+	// The result must be a boolean. Undefined indicates an invalid policy.
 	if (result === undefined) {
-		_logger.error({ result }, "Policy evaluation result is undefined");
-		return false;
+		throw new PolicyError("Policy did not return a result");
 	}
 
 	return result;
 }
 
 /**
- * Evaluates the policy.
+ * Error thrown when something around the policy fails.
  */
-export async function evaluatePolicyForRequest(
-	opts: Pick<PolicyInput, "target" | "caller">
-): Promise<boolean> {
+export class PolicyError extends Error {
+	public constructor(message: string, cause?: Error) {
+		super(message);
+		this.name = "PolicyError";
+		this.cause = cause;
+	}
+}
+
+/**
+ * Provides the policy to use based on the current config.
+ */
+export async function getPolicy(): Promise<opa.LoadedPolicy> {
 	const config = getConfig();
 
 	// Decide which policy to use.
-	let policyFile: ArrayBuffer;
-	if (config.POLICY === "custom") {
-		policyFile = await readPolicyFile(config.POLICY_PATH);
-	} else {
-		policyFile = await readPolicyFile(
-			path.join(
-				process.env.POLICY_DIR as string,
-				builtInPolicyMapping[config.POLICY_TYPE]
-			)
+	try {
+		let policyFile: ArrayBuffer;
+		if (config.POLICY === "custom") {
+			policyFile = await fsp.readFile(config.POLICY_PATH);
+		} else {
+			policyFile = await fsp.readFile(
+				path.join(
+					process.env.POLICY_DIR as string,
+					builtInPolicyMapping[config.POLICY_TYPE]
+				)
+			);
+		}
+
+		return loadPolicy(policyFile);
+	} catch (e) {
+		throw new PolicyError(
+			"Failed to load policy file",
+			e instanceof Error ? e : undefined
 		);
 	}
+}
 
-	const policy = await loadPolicy(policyFile);
+/**
+ * Evaluates the given policy using the inputs provided.
+ */
+export async function evaluatePolicyForRequest(
+	policy: opa.LoadedPolicy,
+	input: Pick<PolicyInput, "target" | "caller">
+): Promise<boolean> {
+	const config = getConfig();
 
+	// Parse the policy configuration from the config.
 	const inputConfig = config.POLICY_CONFIG
 		? await parsePolicyConfig(config.POLICY_CONFIG)
 		: {};
 
 	return await evaluatePolicy(policy, {
-		...opts,
+		...input,
 		config: inputConfig,
 	});
 }
 
-export type PolicyInput = z.infer<typeof policyInputSchemas>;
+export type PolicyInput = Pick<
+	z.infer<typeof policyContextSchema>,
+	"caller" | "target"
+>;

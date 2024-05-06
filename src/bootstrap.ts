@@ -1,6 +1,6 @@
 import { Server } from "hyper-express";
 
-import { dispatchHandlerController } from "./dispatch-handler/controller";
+import { dispatchControllerFactory } from "./dispatch/controller";
 import { getConfig } from "./utils/config";
 import { getLogger } from "./utils/logger";
 import { getOpenApiSpec } from "./utils/openapi";
@@ -29,10 +29,12 @@ export const bootstrap = (async (): Promise<BootstrapResult> => {
 	// Load the configuration first to make sure it's valid.
 	const config = getConfig();
 
+	logger.debug({ config }, "Loaded configuration");
+
 	const server = new Server();
 
 	// Register the handler controller.
-	server.post("/dispatch", dispatchHandlerController);
+	server.post("/dispatch", await dispatchControllerFactory());
 
 	// Serve the OpenAPI specification as a static file.
 	server.get("/openapi.yaml", async (_, res) => {

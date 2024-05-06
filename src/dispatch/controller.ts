@@ -1,8 +1,8 @@
 import { z } from "zod";
 
 import { sendWorkflowDispatch } from "./github";
-import { decodeIdToken } from "./id-token";
-import { evaluatePolicyForRequest } from "./policy";
+import { decodeIdToken, getJwtVerifier } from "./id-token";
+import { evaluatePolicyForRequest, getPolicy } from "./policy";
 import { getLogger } from "../utils/logger";
 
 import type { IdTokenClaims } from "./id-token";
@@ -27,21 +27,11 @@ const bodySchema = z.object({
 const responseContentType = "application/json";
 
 /**
- * Parse the request body and return it.
+ * Map the request body to a policy input.
  *
- * @param req
+ * @param body
+ * @param idToken
  */
-const parseBody = async (
-	req: Parameters<UserRouteHandler>[0]
-): Promise<z.infer<typeof bodySchema> | undefined> => {
-	try {
-		return await bodySchema.parseAsync(await req.json());
-	} catch (e) {
-		_logger.debug({ error: e }, "Invalid request body");
-		return undefined;
-	}
-};
-
 const mapPolicyInput = (
 	body: z.infer<typeof bodySchema>,
 	idToken: IdTokenClaims
@@ -61,61 +51,73 @@ const mapPolicyInput = (
 	},
 });
 
-export const dispatchHandlerController: UserRouteHandler = async (req, res) => {
-	const body = await parseBody(req);
+export const dispatchControllerFactory: () => Promise<UserRouteHandler> =
+	async () => {
+		const jwtVerifier = await getJwtVerifier();
+		const policy = await getPolicy();
 
-	// If the body is not valid, return an error.
-	if (body === undefined) {
-		return res
-			.status(400)
-			.header("content-type", responseContentType)
-			.json({ error: "Invalid request body" });
-	}
+		return async (req, res) => {
+			_logger.debug({ req }, "Processing request");
 
-	// Validate the ID token.
-	let idToken;
-	try {
-		idToken = await decodeIdToken(body.idToken);
-	} catch (e) {
-		_logger.warn({ error: e }, "Failed to decode ID token");
-		return res
-			.status(400)
-			.header("content-type", responseContentType)
-			.json({ error: "Failed to decode ID token" });
-	}
+			let body;
+			try {
+				body = await bodySchema.parseAsync(await req.json());
+			} catch (e) {
+				return res
+					.status(400)
+					.header("content-type", responseContentType)
+					.json({ error: "Invalid request body" });
+			}
 
-	// Evaluate the policy.
-	try {
-		const input = mapPolicyInput(body, idToken);
+			// Validate the ID token.
+			let idToken;
+			try {
+				idToken = await decodeIdToken(jwtVerifier, body.idToken);
+			} catch (e) {
+				_logger.warn({ error: e }, "Failed to decode ID token");
+				return res
+					.status(400)
+					.header("content-type", responseContentType)
+					.json({ error: "Failed to decode ID token" });
+			}
 
-		const policyResult = await evaluatePolicyForRequest(input);
-		if (!policyResult) {
-			return res
-				.status(401)
-				.header("content-type", responseContentType)
-				.json({ error: "Request blocked by policy" });
-		}
-	} catch (e) {
-		_logger.warn({ error: e }, "Failed to evaluate policy");
-		return res
-			.status(401)
-			.header("content-type", responseContentType)
-			.json({ error: "Request blocked by policy" });
-	}
+			// Evaluate the policy.
+			try {
+				const policyResult = await evaluatePolicyForRequest(
+					policy,
+					mapPolicyInput(body, idToken)
+				);
 
-	// Send the workflow dispatch.
-	try {
-		await sendWorkflowDispatch({
-			...body.target,
-			inputs: body.inputs,
-		});
-	} catch (e) {
-		_logger.warn({ error: e }, "Failed to send workflow dispatch");
-		return res
-			.status(500)
-			.header("content-type", responseContentType)
-			.json({ error: "Failed to send workflow dispatch" });
-	}
+				if (!policyResult) {
+					return res
+						.status(401)
+						.header("content-type", responseContentType)
+						.json({ error: "Request blocked by policy" });
+				}
+			} catch (e) {
+				_logger.warn({ error: e }, "Failed to evaluate policy");
+				return res
+					.status(401)
+					.header("content-type", responseContentType)
+					.json({ error: "Request blocked by policy" });
+			}
 
-	return res.status(200).send();
-};
+			// Send the workflow dispatch.
+			try {
+				await sendWorkflowDispatch({
+					...body.target,
+					inputs: body.inputs,
+				});
+			} catch (e) {
+				_logger.warn({ error: e }, "Failed to send workflow dispatch");
+				return res
+					.status(500)
+					.header("content-type", responseContentType)
+					.json({ error: "Failed to send workflow dispatch" });
+			}
+
+			return res.status(200).json({
+				message: "workflow dispatch created",
+			});
+		};
+	};

@@ -3,15 +3,18 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { setupOAuthServer } from "../../test/utils/setup-oauth-server";
 import { testDataIdTokenClaims } from "../../test/utils/test-data";
 
-import type { decodeIdToken } from "./id-token";
+import type { decodeIdToken, getJwtVerifier } from "./id-token";
 
 describe("handler/id-token", () => {
-	let fn: typeof decodeIdToken;
+	let decodeIdTokenFn: typeof decodeIdToken;
+	let getJwtVerifierFn: typeof getJwtVerifier;
 
 	const oAuthServer = setupOAuthServer();
 
 	beforeEach(async () => {
-		fn = (await import("./id-token.js")).decodeIdToken;
+		const imported = await import("./id-token.js");
+		decodeIdTokenFn = imported.decodeIdToken;
+		getJwtVerifierFn = imported.getJwtVerifier;
 	});
 
 	afterEach(() => {
@@ -24,7 +27,7 @@ describe("handler/id-token", () => {
 
 		const token = await oAuthServer.buildToken();
 
-		const claims = await fn(token);
+		const claims = await decodeIdTokenFn(await getJwtVerifierFn(), token);
 
 		expect(claims).toMatchObject({
 			aud: "github-workflow-dispatch-proxy",
@@ -37,7 +40,7 @@ describe("handler/id-token", () => {
 
 		const token = await oAuthServer.buildToken(testDataIdTokenClaims);
 
-		const claims = await fn(token);
+		const claims = await decodeIdTokenFn(await getJwtVerifierFn(), token);
 
 		expect(claims).toMatchObject(testDataIdTokenClaims);
 	});

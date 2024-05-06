@@ -3,7 +3,7 @@ import { Issuer } from "openid-client";
 
 import { getConfig } from "../utils/config";
 
-import type { JWTPayload } from "jose";
+import type { JWTPayload, JWTVerifyGetKey } from "jose";
 
 /**
  * All possible claims that can be found in the ID token.
@@ -40,12 +40,12 @@ export class IdTokenError extends Error {
 }
 
 /**
- * Validates the ID token from GitHub.
+ * Provides the function to fetch the public key to verify the JWT.
+ * Intended to be used with {@link decodeIdToken}.
  *
- * @param token The ID token to validate.
- * @throws IdTokenError If the IdToken could not be decoded or verified.
+ * @returns The function to get the public key.
  */
-export const decodeIdToken = async (token: string): Promise<IdTokenClaims> => {
+export const getJwtVerifier = async (): Promise<JWTVerifyGetKey> => {
 	const config = getConfig();
 
 	let issuer: Issuer;
@@ -53,16 +53,35 @@ export const decodeIdToken = async (token: string): Promise<IdTokenClaims> => {
 		issuer = await Issuer.discover(config.GH_ISSUER);
 	} catch (e) {
 		throw new IdTokenError(
-			"Failed to discover GitHub issuer",
+			"Failed to discover issuer",
 			e instanceof Error ? e : undefined
 		);
 	}
 
-	try {
-		const jwks = createRemoteJWKSet(new URL(issuer.metadata.jwks_uri ?? ""));
+	const jwksUri = issuer.metadata.jwks_uri;
+	if (!jwksUri) {
+		throw new IdTokenError("Issuer does not provide JWKS URI");
+	}
 
-		const decoded = await jwtVerify<IdTokenClaims>(token, jwks, {
-			issuer: issuer.metadata.issuer,
+	return createRemoteJWKSet(new URL(jwksUri));
+};
+
+/**
+ * Validates the ID token from GitHub.
+ *
+ * @param jwtVerifier Function to get the public key to verify the token.
+ * @param token The ID token to validate.
+ * @throws IdTokenError If the IdToken could not be decoded or verified.
+ */
+export const decodeIdToken = async (
+	jwtVerifier: JWTVerifyGetKey,
+	token: string
+): Promise<IdTokenClaims> => {
+	const config = getConfig();
+
+	try {
+		const decoded = await jwtVerify<IdTokenClaims>(token, jwtVerifier, {
+			issuer: config.GH_ISSUER,
 			audience: "github-workflow-dispatch-proxy",
 		});
 
