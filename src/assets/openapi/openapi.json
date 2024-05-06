@@ -1,0 +1,81 @@
+{
+	"openapi": "3.1.0",
+	"info": {
+		"title": "github-workflow-dispatch-proxy",
+		"description": "Authenticated proxy for GitHub Actions' workflow_dispatch event",
+		"version": "1.0.0"
+	},
+	"paths": {
+		"/dispatch": {
+			"post": {
+				"summary": "Returns a list of users.",
+				"description": "Optional extended description in CommonMark or HTML.",
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"idToken": {
+										"type": "string",
+										"description": "IdToken of the caller action."
+									},
+									"target": {
+										"type": "object",
+										"properties": {
+											"owner": {
+												"type": "string",
+												"description": "Owner of the repository."
+											},
+											"repo": {
+												"type": "string",
+												"description": "Repository name."
+											},
+											"ref": {
+												"type": "string",
+												"description": "Ref."
+											},
+											"workflow": {
+												"type": "string",
+												"description": "Workflow name."
+											}
+										}
+									},
+									"input": {
+										"type": "object",
+										"example": {
+											"application": "production",
+											"version": "1.0.0"
+										},
+										"additionalProperties": {
+											"type": "string"
+										}
+									}
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Successfully submitted workflow_dispatch event",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"message": {
+											"type": "string",
+											"example": "dispatched"
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}

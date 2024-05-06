@@ -36,9 +36,9 @@ export const bootstrap = (async (): Promise<BootstrapResult> => {
 	// Register the handler controller.
 	server.post("/dispatch", await dispatchControllerFactory());
 
-	// Serve the OpenAPI specification as a static file.
+	// Serve the OpenAPI in YAML format.
 	server.get("/openapi.yaml", async (_, res) => {
-		const content = await getOpenApiSpec();
+		const content = await getOpenApiSpec("yaml");
 
 		res
 			.status(200)
@@ -47,6 +47,20 @@ export const bootstrap = (async (): Promise<BootstrapResult> => {
 				"public, max-age 172800, stale-while-revalidate 172800"
 			)
 			.header("content-type", "application/yaml")
+			.send(content);
+	});
+
+	// Serve the OpenAPI in JSON format.
+	server.get("/openapi.json", async (_, res) => {
+		const content = await getOpenApiSpec("json");
+
+		res
+			.status(200)
+			.header(
+				"cache-control",
+				"public, max-age 172800, stale-while-revalidate 172800"
+			)
+			.header("content-type", "application/json")
 			.send(content);
 	});
 
