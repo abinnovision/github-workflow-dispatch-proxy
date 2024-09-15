@@ -2,7 +2,7 @@ import { getPort } from "get-port-please";
 import { OAuth2Server } from "oauth2-mock-server";
 import { afterAll, beforeAll, beforeEach, vi } from "vitest";
 
-import type { IdTokenClaims } from "../../src/dispatch/id-token";
+import type { IdTokenClaims } from "../../src/dispatch/id-token.js";
 
 interface SetupOAuthServerOpts {
 	setupEnvVars?: boolean;
