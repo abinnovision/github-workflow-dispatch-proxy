@@ -51,7 +51,7 @@ describe("dispatch-handler", () => {
 				)
 				.reply(200);
 
-			const response = await st
+			await st
 				.post("/dispatch")
 				.send({
 					idToken,
@@ -66,8 +66,6 @@ describe("dispatch-handler", () => {
 					},
 				})
 				.expect(200);
-
-			console.log(response.text);
 		});
 	});
 });

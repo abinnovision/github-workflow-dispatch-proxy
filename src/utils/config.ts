@@ -13,6 +13,7 @@ const _logger = getLogger("utils/config");
 const baseSchema = z.object({
 	PORT: z.coerce.number().default(8080),
 	ORGANIZATION: z.string().optional(),
+	BASE_PATH: z.string().default("/"),
 
 	GH_ISSUER: z.string().default("https://token.actions.githubusercontent.com"),
 });

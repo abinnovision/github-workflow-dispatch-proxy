@@ -7,7 +7,7 @@ import { getLogger } from "../utils/logger";
 
 import type { IdTokenClaims } from "./id-token";
 import type { PolicyInput } from "./policy";
-import type { UserRouteHandler } from "hyper-express/types/components/router/Router";
+import type { RequestHandler } from "express";
 
 const _logger = getLogger("handler/controller");
 
@@ -51,7 +51,7 @@ const mapPolicyInput = (
 	},
 });
 
-export const dispatchControllerFactory: () => Promise<UserRouteHandler> =
+export const dispatchControllerFactory: () => Promise<RequestHandler> =
 	async () => {
 		const jwtVerifier = await getJwtVerifier();
 		const policy = await getPolicy();
@@ -61,7 +61,7 @@ export const dispatchControllerFactory: () => Promise<UserRouteHandler> =
 
 			let body;
 			try {
-				body = await bodySchema.parseAsync(await req.json());
+				body = await bodySchema.parseAsync(await req.body);
 			} catch (e) {
 				return res
 					.status(400)

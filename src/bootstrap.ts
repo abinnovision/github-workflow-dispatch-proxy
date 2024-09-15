@@ -1,9 +1,13 @@
-import { Server } from "hyper-express";
+import * as bodyParser from "body-parser";
+import expressApp, { Router } from "express";
 
 import { dispatchControllerFactory } from "./dispatch/controller";
 import { getConfig } from "./utils/config";
 import { getLogger } from "./utils/logger";
 import { getOpenApiSpec } from "./utils/openapi";
+
+import type { Express } from "express";
+import type { Server } from "http";
 
 /**
  * Describes the result of the bootstrap function.
@@ -11,9 +15,15 @@ import { getOpenApiSpec } from "./utils/openapi";
  */
 interface BootstrapResult {
 	/**
+	 * Running application instance.
+	 */
+	app: Express;
+
+	/**
 	 * Running server instance.
 	 */
 	server: Server;
+
 	/**
 	 * Function to shut down the current server instance.
 	 */
@@ -31,13 +41,16 @@ export const bootstrap = (async (): Promise<BootstrapResult> => {
 
 	logger.debug({ config }, "Loaded configuration");
 
-	const server = new Server();
+	const app = expressApp();
+	app.use(bodyParser.json());
+
+	const baseRouter = Router();
 
 	// Register the handler controller.
-	server.post("/dispatch", await dispatchControllerFactory());
+	baseRouter.post("/dispatch", await dispatchControllerFactory());
 
 	// Serve the OpenAPI in YAML format.
-	server.get("/openapi.yaml", async (_, res) => {
+	baseRouter.get("/openapi.yaml", async (_, res) => {
 		const content = await getOpenApiSpec("yaml");
 
 		res
@@ -51,7 +64,7 @@ export const bootstrap = (async (): Promise<BootstrapResult> => {
 	});
 
 	// Serve the OpenAPI in JSON format.
-	server.get("/openapi.json", async (_, res) => {
+	baseRouter.get("/openapi.json", async (_, res) => {
 		const content = await getOpenApiSpec("json");
 
 		res
@@ -65,27 +78,39 @@ export const bootstrap = (async (): Promise<BootstrapResult> => {
 	});
 
 	// Simple health check endpoint to verify the server is running.
-	server.get("/healthz", (_, res) => {
+	baseRouter.get("/healthz", (_, res) => {
 		res.status(200).json({
 			message: "ok",
 		});
 	});
 
 	// Set up a global not found handler
-	server.set_not_found_handler((_, res) => {
-		res.status(404).json({
-			error: "Not found",
-		});
+	// server.set_not_found_handler((_, res) => {
+	// 	res.status(404).json({
+	// 		error: "Not found",
+	// 	});
+	// });
+
+	app.use(config.BASE_PATH, baseRouter);
+
+	const server = await new Promise<Server>((resolve, reject) => {
+		try {
+			const _server = app.listen(config.PORT, () => {
+				resolve(_server);
+			});
+		} catch (e) {
+			reject(e);
+		}
 	});
 
-	await server.listen(config.PORT);
 	logger.info({ port: config.PORT }, "Server started on port %d", config.PORT);
 
 	return {
+		app: app,
 		server,
 		shutdown: () => server?.close(),
 	};
-})().catch((error) => {
-	logger.error({ error }, "Failed to start server");
+})().catch((err) => {
+	logger.error({ err }, "Failed to start server");
 	process.exit(1);
 });

@@ -1,4 +1,4 @@
-import type { IdTokenClaims } from "../../src/dispatch-handler/id-token";
+import type { IdTokenClaims } from "../../src/dispatch/id-token";
 
 /**
  * Test data for the OIDC token claims.
