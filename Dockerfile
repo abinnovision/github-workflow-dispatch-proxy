@@ -8,6 +8,10 @@ ARG VERSION
 ENV NODE_ENV production
 
 RUN corepack enable
+
+RUN --mount=type=secret,id=NPM_ABINNOVISION_AUTH_TOKEN,target=/run/secrets/NPM_ABINNOVISION_AUTH_TOKEN \
+    yarn config set -H --json npmScopes '{"abinnovision": {"npmPublishRegistry": "https://npm.pkg.github.com", "npmRegistryServer": "https://npm.pkg.github.com", "npmAlwaysAuth": true, "npmAuthToken": "'"$(cat /run/secrets/NPM_ABINNOVISION_AUTH_TOKEN)"'"}}' \
+
 RUN yarn install --immutable
 
 RUN yarn build

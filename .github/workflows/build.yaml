@@ -39,19 +39,8 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: ${{ needs.configure.outputs.commit-sha }}
-      - run: corepack enable
       - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version-file: ".tool-versions"
-          cache: "yarn"
-      - name: Cache
-        uses: actions/cache@v3
-        with:
-          path: ${{ github.workspace }}/node_modules
-          key: dependencies-${{ runner.os }}-${{ github.run_id }}-${{ hashFiles('yarn.lock') }}
-          restore-keys: |
-            dependencies-${{ runner.os }}-${{ github.run_id }}-
+        uses: abinnovision/actions@setup-node-v1
       - name: Install dependencies
         run: yarn install --immutable
       - name: Check
@@ -71,19 +60,8 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: ${{ needs.configure.outputs.commit-sha }}
-      - run: corepack enable
       - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version-file: ".tool-versions"
-          cache: "yarn"
-      - name: Cache
-        uses: actions/cache@v3
-        with:
-          path: ${{ github.workspace }}/node_modules
-          key: dependencies-${{ runner.os }}-${{ github.run_id }}-${{ hashFiles('yarn.lock') }}
-          restore-keys: |
-            dependencies-${{ runner.os }}-${{ github.run_id }}-
+        uses: abinnovision/actions@setup-node-v1
       - name: Install dependencies
         run: yarn install --immutable
       - name: Build
@@ -99,19 +77,8 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: ${{ needs.configure.outputs.commit-sha }}
-      - run: corepack enable
       - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version-file: ".tool-versions"
-          cache: "yarn"
-      - name: Cache
-        uses: actions/cache@v3
-        with:
-          path: ${{ github.workspace }}/node_modules
-          key: dependencies-${{ runner.os }}-${{ github.run_id }}-${{ hashFiles('yarn.lock') }}
-          restore-keys: |
-            dependencies-${{ runner.os }}-${{ github.run_id }}-
+        uses: abinnovision/actions@setup-node-v1
       - name: Install dependencies
         run: yarn install --immutable
       - name: Test
@@ -127,19 +94,8 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: ${{ needs.configure.outputs.commit-sha }}
-      - run: corepack enable
       - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version-file: ".tool-versions"
-          cache: "yarn"
-      - name: Cache
-        uses: actions/cache@v3
-        with:
-          path: ${{ github.workspace }}/node_modules
-          key: dependencies-${{ runner.os }}-${{ github.run_id }}-${{ hashFiles('yarn.lock') }}
-          restore-keys: |
-            dependencies-${{ runner.os }}-${{ github.run_id }}-
+        uses: abinnovision/actions@setup-node-v1
       - name: Install dependencies
         run: yarn install --immutable
       - name: Test
@@ -206,3 +162,5 @@ jobs:
           file: Dockerfile
           labels: ${{ steps.meta.outputs.labels }}
           tags: ${{ steps.meta.outputs.tags }}
+          secrets: |
+            NPM_ABINNOVISION_AUTH_TOKEN=${{ github.token }}
