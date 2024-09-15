@@ -1,4 +1,4 @@
-FROM node:20.11.0-alpine as builder
+FROM node:20.17.0-alpine as builder
 
 WORKDIR /app
 
@@ -12,7 +12,7 @@ RUN yarn install --immutable
 
 RUN yarn build
 
-FROM node:20.11.0-alpine as runner
+FROM node:20.17.0-alpine as runner
 
 RUN apk update
 RUN apk add --no-cache libc6-compat
