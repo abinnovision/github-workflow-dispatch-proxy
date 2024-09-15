@@ -1,7 +1,7 @@
 import { createRemoteJWKSet, jwtVerify } from "jose";
 import { Issuer } from "openid-client";
 
-import { getConfig } from "../utils/config";
+import { getConfig } from "../utils/config.js";
 
 import type { JWTPayload, JWTVerifyGetKey } from "jose";
 

@@ -1,7 +1,7 @@
 /**
  * @type {import("esbuild-node-tsc/dist/config").Config}
  */
-module.exports = {
+export default {
 	tsConfigFile: "tsconfig.build.json",
 	esbuild: {
 		outbase: "./",

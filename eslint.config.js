@@ -1,6 +1,10 @@
+import configBase from "@abinnovision/eslint-config-base";
+import configTypescript from "@abinnovision/eslint-config-typescript";
+import globals from "globals";
+
 /** @type {import("@types/eslint").Linter.FlatConfig[]} */
-module.exports = [
-	...require("@abinnovision/eslint-config-base").default,
-	...require("@abinnovision/eslint-config-typescript").default,
-	{ files: ["**/*.js"], languageOptions: { globals: require("globals").node } },
+export default [
+	...configBase,
+	...configTypescript,
+	{ files: ["**/*.js"], languageOptions: { globals: globals.node } },
 ];

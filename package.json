@@ -12,6 +12,7 @@
 		"email": "info@abinnovision.com",
 		"url": "https://abinnovision.com/"
 	},
+	"type": "module",
 	"scripts": {
 		"build": "tsc --project tsconfig.build.json --noEmit && etsc",
 		"check": "yarn format:check && yarn lint:check",

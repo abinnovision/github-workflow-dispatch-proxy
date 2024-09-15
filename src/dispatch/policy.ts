@@ -3,7 +3,7 @@ import * as fsp from "fs/promises";
 import * as path from "path";
 import z from "zod";
 
-import { getConfig } from "../utils/config";
+import { getConfig } from "../utils/config.js";
 
 import type opa from "@open-policy-agent/opa-wasm";
 

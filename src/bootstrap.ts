@@ -1,10 +1,10 @@
 import * as bodyParser from "body-parser";
 import expressApp, { Router } from "express";
 
-import { dispatchControllerFactory } from "./dispatch/controller";
-import { getConfig } from "./utils/config";
-import { getLogger } from "./utils/logger";
-import { getOpenApiSpec } from "./utils/openapi";
+import { dispatchControllerFactory } from "./dispatch/controller.js";
+import { getConfig } from "./utils/config.js";
+import { getLogger } from "./utils/logger.js";
+import { getOpenApiSpec } from "./utils/openapi.js";
 
 import type { Express } from "express";
 import type { Server } from "http";

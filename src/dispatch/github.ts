@@ -4,7 +4,7 @@ import { AsyncLocalStorage } from "async_hooks";
 import { LRUCache } from "lru-cache";
 import { Octokit } from "octokit";
 
-import { getConfig } from "../utils/config";
+import { getConfig } from "../utils/config.js";
 
 interface RepositoryIdentity {
 	owner: string;

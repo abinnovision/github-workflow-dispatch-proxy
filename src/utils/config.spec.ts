@@ -1,6 +1,6 @@
 import { describe, it, vi } from "vitest";
 
-import { getConfig } from "./config";
+import { getConfig } from "./config.js";
 
 describe("utils/config", () => {
 	it("should parse bare minimum configuration", () => {

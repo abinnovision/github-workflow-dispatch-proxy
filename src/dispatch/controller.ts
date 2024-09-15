@@ -1,12 +1,12 @@
 import { z } from "zod";
 
-import { sendWorkflowDispatch } from "./github";
-import { decodeIdToken, getJwtVerifier } from "./id-token";
-import { evaluatePolicyForRequest, getPolicy } from "./policy";
-import { getLogger } from "../utils/logger";
+import { sendWorkflowDispatch } from "./github.js";
+import { decodeIdToken, getJwtVerifier } from "./id-token.js";
+import { evaluatePolicyForRequest, getPolicy } from "./policy.js";
+import { getLogger } from "../utils/logger.js";
 
-import type { IdTokenClaims } from "./id-token";
-import type { PolicyInput } from "./policy";
+import type { IdTokenClaims } from "./id-token.js";
+import type { PolicyInput } from "./policy.js";
 import type { RequestHandler } from "express";
 
 const _logger = getLogger("handler/controller");

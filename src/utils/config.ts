@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { getLogger } from "./logger";
+import { getLogger } from "./logger.js";
 
 // The prefix to use for environment variables.
 const PREFIX = "APP_";

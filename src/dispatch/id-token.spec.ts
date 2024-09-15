@@ -1,9 +1,9 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { setupOAuthServer } from "../../test/utils/setup-oauth-server";
-import { testDataIdTokenClaims } from "../../test/utils/test-data";
+import { setupOAuthServer } from "../../test/utils/setup-oauth-server.js";
+import { testDataIdTokenClaims } from "../../test/utils/test-data.js";
 
-import type { decodeIdToken, getJwtVerifier } from "./id-token";
+import type { decodeIdToken, getJwtVerifier } from "./id-token.js";
 
 describe("handler/id-token", () => {
 	let decodeIdTokenFn: typeof decodeIdToken;

@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import type { evaluatePolicyForRequest, getPolicy } from "./policy";
+import type { evaluatePolicyForRequest, getPolicy } from "./policy.js";
 
 describe("handler/policy", () => {
 	let getPolicyFn: typeof getPolicy;
