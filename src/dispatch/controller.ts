@@ -62,6 +62,7 @@ export const dispatchControllerFactory: () => Promise<RequestHandler> =
 			let body;
 			try {
 				body = await bodySchema.parseAsync(await req.body);
+				// eslint-disable-next-line @typescript-eslint/no-unused-vars
 			} catch (e) {
 				return res
 					.status(400)

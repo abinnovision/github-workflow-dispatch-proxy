@@ -1,6 +1,3 @@
-const fsp = require("fs/promises");
-const path = require("path");
-
 /**
  * @type {import("esbuild-node-tsc/dist/config").Config}
  */
