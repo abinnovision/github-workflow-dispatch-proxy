@@ -15,33 +15,12 @@ module.exports = {
 		target: "node20",
 		loader: {
 			".yaml": "text",
-			".node": "copy",
 		},
 		define: {
 			"process.env.POLICY_DIR": `"./policies"`,
 		},
 	},
 	postbuild: async () => {
-		// uWebSockets.js works with binary targets and it has a different binary for each platform.
-		// The binary is named as `uws_${platform}_${arch}_${modules}.node`.
-		// We only need the binary for the current platform, the rest can be removed.
-
-		const filesToKeep = [
-			`uws_${process.platform}_${process.arch}_${process.versions.modules}.node`,
-		];
-
-		const dirPath = path.resolve(`dist/node_modules/uWebSockets.js/`);
-
-		// Get all the available .node files.
-		const dirContent = await fsp.readdir(dirPath);
-
-		// Remove all the files that are not needed.
-		for (const file of dirContent) {
-			if (!filesToKeep.includes(file)) {
-				await fsp.rm(path.resolve(dirPath, file), { recursive: true });
-			}
-		}
-
 		await (await import("cpy")).default("policies/*.wasm", "dist/policies/");
 	},
 };
