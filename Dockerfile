@@ -10,7 +10,7 @@ ENV NODE_ENV production
 RUN corepack enable
 
 RUN --mount=type=secret,id=NPM_ABINNOVISION_AUTH_TOKEN,target=/run/secrets/NPM_ABINNOVISION_AUTH_TOKEN \
-    yarn config set -H --json npmScopes '{"abinnovision": {"npmPublishRegistry": "https://npm.pkg.github.com", "npmRegistryServer": "https://npm.pkg.github.com", "npmAlwaysAuth": true, "npmAuthToken": "'"$(cat /run/secrets/NPM_ABINNOVISION_AUTH_TOKEN)"'"}}' \
+    yarn config set -H --json npmScopes '{"abinnovision": {"npmPublishRegistry": "https://npm.pkg.github.com", "npmRegistryServer": "https://npm.pkg.github.com", "npmAlwaysAuth": true, "npmAuthToken": "'"$(cat /run/secrets/NPM_ABINNOVISION_AUTH_TOKEN)"'"}}'
 
 RUN yarn install --immutable
 
@@ -26,7 +26,7 @@ WORKDIR /app
 COPY --from=builder --chown=node:node /app/dist ./
 
 USER node
-ENV NODE_ENV=production
+ENV NODE_ENV production
 
 EXPOSE 8080
 CMD ["node", "./src/bootstrap.js"]
