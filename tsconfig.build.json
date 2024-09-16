@@ -4,6 +4,7 @@
 	"exclude": ["src/**/*.spec.ts"],
 	"compilerOptions": {
 		"outDir": "./dist",
-		"declaration": false
+		"declaration": false,
+		"noEmit": false
 	}
 }

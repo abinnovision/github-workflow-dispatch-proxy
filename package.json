@@ -14,7 +14,7 @@
 	},
 	"type": "module",
 	"scripts": {
-		"build": "tsc --project tsconfig.build.json --noEmit && etsc",
+		"build": "tsc --project tsconfig.json && etsc",
 		"check": "yarn format:check && yarn lint:check",
 		"fix": "yarn format:fix && yarn lint:fix",
 		"format:check": "prettier --check '{{src,test,cypress}/**/*,*}.{js,jsx,ts,tsx,json,json5,yml,yaml,md}'",
@@ -72,6 +72,7 @@
 		"@commitlint/cli": "^19.5.0",
 		"@types/body-parser": "^1",
 		"@types/express": "^4",
+		"@types/node": "^22.5.5",
 		"@types/supertest": "^6.0.2",
 		"@vitest/coverage-v8": "^2.1.1",
 		"cpy": "^11.1.0",
