@@ -84,14 +84,16 @@ export const bootstrap = (async (): Promise<BootstrapResult> => {
 		});
 	});
 
+	// Mount the router on the base path.
+	// By default, the router is mounted on "/".
+	app.use(config.BASE_PATH, baseRouter);
+
 	// Set up a global not found handler
 	app.use((_, res) => {
 		res.status(404).json({
 			error: "Not found",
 		});
 	});
-
-	app.use(config.BASE_PATH, baseRouter);
 
 	const server = await new Promise<Server>((resolve, reject) => {
 		try {
