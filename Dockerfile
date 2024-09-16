@@ -1,4 +1,4 @@
-FROM node:20.17.0-alpine as builder
+FROM node:20.17.0-alpine AS builder
 
 WORKDIR /app
 
@@ -19,7 +19,7 @@ RUN yarn build
 # Install only production dependencies.
 RUN yarn workspaces focus --production
 
-FROM node:20.17.0-alpine as runner
+FROM node:20.17.0-alpine AS runner
 WORKDIR /app
 
 COPY --from=builder --chown=node:node /app/dist ./
