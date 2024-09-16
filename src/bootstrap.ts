@@ -1,4 +1,4 @@
-import * as bodyParser from "body-parser";
+import bodyParser from "body-parser";
 import expressApp, { Router } from "express";
 
 import { dispatchControllerFactory } from "./dispatch/controller.js";
@@ -85,11 +85,11 @@ export const bootstrap = (async (): Promise<BootstrapResult> => {
 	});
 
 	// Set up a global not found handler
-	// server.set_not_found_handler((_, res) => {
-	// 	res.status(404).json({
-	// 		error: "Not found",
-	// 	});
-	// });
+	app.use((_, res) => {
+		res.status(404).json({
+			error: "Not found",
+		});
+	});
 
 	app.use(config.BASE_PATH, baseRouter);
 
