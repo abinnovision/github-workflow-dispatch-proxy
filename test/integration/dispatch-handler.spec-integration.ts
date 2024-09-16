@@ -3,8 +3,8 @@ import nock from "nock";
 import request from "supertest";
 import { afterEach, beforeEach, describe, it, vi } from "vitest";
 
-import { setupOAuthServer } from "../utils/setup-oauth-server";
-import { testDataIdTokenClaims } from "../utils/test-data";
+import { setupOAuthServer } from "../utils/setup-oauth-server.js";
+import { testDataIdTokenClaims } from "../utils/test-data.js";
 
 import type { Agent } from "supertest";
 
@@ -25,7 +25,7 @@ describe("dispatch-handler", () => {
 	});
 
 	afterEach(async () => {
-		await shutdownHandler?.();
+		shutdownHandler?.();
 		vi.resetModules();
 		nock.cleanAll();
 	});
