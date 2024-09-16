@@ -20,10 +20,6 @@ RUN yarn build
 RUN yarn workspaces focus --production
 
 FROM node:20.17.0-alpine as runner
-
-RUN apk update
-RUN apk add --no-cache libc6-compat
-
 WORKDIR /app
 
 COPY --from=builder --chown=node:node /app/dist ./
