@@ -132,7 +132,6 @@ jobs:
         run: |
           REPOSITORY_NAME_SANITIZED=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]');
           echo "DOCKER_IMAGE_NAME=ghcr.io/$REPOSITORY_NAME_SANITIZED" >> $GITHUB_ENV
-          echo "PACKAGE_NAME=$(echo "${GITHUB_REPOSITORY#*/}-web" | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
       - name: Extract version
         run: |
           echo PKG_VERSION=$(cat package.json | jq -r ".version") >> $GITHUB_ENV
@@ -161,3 +160,39 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           secrets: |
             NPM_ABINNOVISION_AUTH_TOKEN=${{ github.token }}
+    cleanup-registry:
+      name: Cleanup Registry
+      runs-on: ubuntu-latest
+      timeout-minutes: 15
+      permissions:
+        contents: "read"
+        packages: "write"
+      needs:
+        - build-image
+      steps:
+        - name: Prepare
+          run: |
+            echo "PACKAGE_NAME=$(echo "${GITHUB_REPOSITORY#*/}" | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+        - name: Cleanup non-release images
+          uses: snok/container-retention-policy@v3
+          with:
+            account-type: org
+            token: ${{ secrets.GITHUB_TOKEN }}
+            token-type: github-token
+            org-name: abinnovision
+            image-names: ${{ env.PACKAGE_NAME }}
+            cut-off: one week ago UTC
+            keep-at-least: 2
+            filter-tags: "sha-*"
+            skip-tags: "*.*.*, cache-latest"
+        - name: Cleanup untagged images
+          uses: snok/container-retention-policy@v3
+          with:
+            account-type: org
+            token: ${{ secrets.GITHUB_TOKEN }}
+            token-type: github-token
+            org-name: abinnovision
+            image-names: ${{ env.PACKAGE_NAME }}
+            cut-off: one day ago UTC
+            keep-at-least: 0
+            untagged-only: true
