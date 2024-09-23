@@ -7,13 +7,11 @@ import { getLogger } from "../utils/logger.js";
 
 import type { IdTokenClaims } from "./id-token.js";
 import type { PolicyInput } from "./policy.js";
-import type { RequestHandler } from "express";
+import type { RequestHandler, Request } from "express";
 
 const _logger = getLogger("handler/controller");
 
 const bodySchema = z.object({
-	idToken: z.string(),
-
 	target: z.object({
 		owner: z.string(),
 		repo: z.string(),
@@ -25,6 +23,7 @@ const bodySchema = z.object({
 });
 
 const responseContentType = "application/json";
+const authorizationHeaderPrefix = "Bearer ";
 
 /**
  * Map the request body to a policy input.
@@ -51,6 +50,25 @@ const mapPolicyInput = (
 	},
 });
 
+/**
+ * Extracts the ID token from the request.
+ *
+ * @param req The request to extract the ID token from.
+ * @returns The ID token or undefined if it could not be extracted.
+ */
+const extractIdToken = async (req: Request): Promise<string | undefined> => {
+	if (!req.headers.authorization) {
+		return undefined;
+	}
+
+	const value = req.headers.authorization!;
+	if (!value.startsWith(authorizationHeaderPrefix)) {
+		return undefined;
+	}
+
+	return value.slice(authorizationHeaderPrefix.length);
+};
+
 export const dispatchControllerFactory: () => Promise<RequestHandler> =
 	async () => {
 		const jwtVerifier = await getJwtVerifier();
@@ -58,6 +76,27 @@ export const dispatchControllerFactory: () => Promise<RequestHandler> =
 
 		return async (req, res) => {
 			_logger.debug({ req }, "Processing request");
+
+			// Validate the ID token.
+			let idToken;
+			try {
+				const idTokenValue = await extractIdToken(req);
+				if (!idTokenValue) {
+					_logger.warn("Missing ID token");
+					return res
+						.status(401)
+						.header("content-type", responseContentType)
+						.json({ error: "Missing authentication" });
+				}
+
+				idToken = await decodeIdToken(jwtVerifier, idTokenValue);
+			} catch (e) {
+				_logger.warn({ error: e }, "Failed to decode ID token");
+				return res
+					.status(400)
+					.header("content-type", responseContentType)
+					.json({ error: "Failed to decode ID token" });
+			}
 
 			let body;
 			try {
@@ -68,18 +107,6 @@ export const dispatchControllerFactory: () => Promise<RequestHandler> =
 					.status(400)
 					.header("content-type", responseContentType)
 					.json({ error: "Invalid request body" });
-			}
-
-			// Validate the ID token.
-			let idToken;
-			try {
-				idToken = await decodeIdToken(jwtVerifier, body.idToken);
-			} catch (e) {
-				_logger.warn({ error: e }, "Failed to decode ID token");
-				return res
-					.status(400)
-					.header("content-type", responseContentType)
-					.json({ error: "Failed to decode ID token" });
 			}
 
 			// Map the body to the policy input.

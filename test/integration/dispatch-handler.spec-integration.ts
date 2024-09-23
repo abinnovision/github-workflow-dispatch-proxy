@@ -39,7 +39,8 @@ describe("dispatch-handler", () => {
 		});
 
 		it("should return 400 if the body is invalid", async () => {
-			await st.post("/dispatch").expect(400).send();
+			// 401 is returned because the Authorization header is missing.
+			await st.post("/dispatch").expect(401).send();
 		});
 
 		it("should forward the dispatch request if all checks pass", async () => {
@@ -53,8 +54,8 @@ describe("dispatch-handler", () => {
 
 			await st
 				.post("/dispatch")
+				.auth(idToken, { type: "bearer" })
 				.send({
-					idToken,
 					target: {
 						owner: "octo-org",
 						repo: "octo-repo",
