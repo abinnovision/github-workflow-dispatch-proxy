@@ -82,11 +82,14 @@ export const dispatchControllerFactory: () => Promise<RequestHandler> =
 					.json({ error: "Failed to decode ID token" });
 			}
 
+			// Map the body to the policy input.
+			const policyInput = mapPolicyInput(body, idToken);
+
 			// Evaluate the policy.
 			try {
 				const policyResult = await evaluatePolicyForRequest(
 					policy,
-					mapPolicyInput(body, idToken)
+					policyInput
 				);
 
 				if (!policyResult) {
@@ -116,6 +119,8 @@ export const dispatchControllerFactory: () => Promise<RequestHandler> =
 					.header("content-type", responseContentType)
 					.json({ error: "Failed to send workflow dispatch" });
 			}
+
+			_logger.info(policyInput, "Workflow dispatch created");
 
 			return res.status(200).json({
 				message: "workflow dispatch created",
