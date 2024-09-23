@@ -5,11 +5,23 @@
 		"description": "Authenticated proxy for GitHub Actions' workflow_dispatch event",
 		"version": "1.0.0"
 	},
+	"components": {
+		"securitySchemes": {
+			"bearerAuth": {
+				"type": "http",
+				"scheme": "bearer"
+			}
+		}
+	},
 	"paths": {
 		"/dispatch": {
 			"post": {
-				"summary": "Returns a list of users.",
-				"description": "Optional extended description in CommonMark or HTML.",
+				"summary": "Creates a workflow dispatch event.",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
 				"requestBody": {
 					"required": true,
 					"content": {
@@ -17,10 +29,6 @@
 							"schema": {
 								"type": "object",
 								"properties": {
-									"idToken": {
-										"type": "string",
-										"description": "IdToken of the caller action."
-									},
 									"target": {
 										"type": "object",
 										"properties": {
