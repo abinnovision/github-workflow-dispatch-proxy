@@ -189,6 +189,6 @@ jobs:
           account: abinnovision
           token: ${{ secrets.GITHUB_TOKEN }}
           image-names: ${{ env.PACKAGE_NAME }}
-          cut-off: one day ago UTC
           keep-n-most-recent: 0
           tag-selection: "untagged"
+          cut-off: "1d"
