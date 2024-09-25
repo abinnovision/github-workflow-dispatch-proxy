@@ -106,6 +106,60 @@ The input schema for the policy is defined as follows:
 }
 ```
 
+## Usage with GitHub Actions
+
+The main idea of this proxy is to allow GitHub Actions to call a workflow
+dispatch from a workflow by using policy evaluation.
+That's why the proxy should easily be integrated into a GitHub Actions workflow.
+
+### Example without an additional action
+
+The proxy can easily be used by using curl.
+First, you'd need to fetch the ID token from the GitHub Actions API.
+Then, you can use curl to send the workflow dispatch request to the proxy.
+
+```yaml
+jobs:
+  dispatch-workflow:
+    name: Dispatch workflow
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dispatch workflow
+        run: |
+          ID_TOKEN_RESPONSE=$(curl -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=github-workflow-dispatch-proxy")
+          ID_TOKEN=$(echo $ID_TOKEN_RESPONSE | jq -r ".value")
+
+          curl --header "Content-Type: application/json" \
+          --request POST \
+          --header "Authorization: Bearer $ID_TOKEN" \
+          --data '{"target":{"owner":"abinnovision","repo":"github-workflow-dispatch-proxy","ref":"master","workflow":"test.yaml"},"inputs":{}}' \
+          https://<endpoint>/dispatch
+```
+
+### Example with abinnovision/actions/run-workflow-dispatch
+
+This example uses the
+[abinnovision/actions@run-workflow-dispatch](https://github.com/abinnovision/actions/blob/master/actions/run-workflow-dispatch/README.md)
+action to run the workflow dispatch.
+
+```yaml
+jobs:
+  dispatch-workflow:
+    name: Dispatch workflow
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dispatch workflow
+        uses: abinnovision/actions@run-workflow-dispatch-v1
+        with:
+          proxy: https://<endpoint> # The base URL of the proxy without a trailing slash.
+          target: owner/repo # or just repo
+          workflow: update.yaml # The workflow to dispatch.
+          workflow-ref: master # Optional, defaults to "master".
+          # Optional inputs for the workflow. Must be a valid JSON string.
+          workflow-inputs: |
+            {"key": "value"}
+```
+
 ## Development
 
 This project is based on a Node.js stack with TypeScript. It uses Yarn as the
