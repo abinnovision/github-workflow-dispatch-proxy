@@ -1,7 +1,7 @@
 {
 	"$schema": "https://json.schemastore.org/package.json",
 	"name": "github-workflow-dispatch-proxy",
-	"version": "0.0.0",
+	"version": "1.0.0",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/abinnoivison/github-workflow-dispatch-proxy"
