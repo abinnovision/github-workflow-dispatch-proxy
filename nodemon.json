@@ -1,4 +1,5 @@
 {
 	"watch": ["src/**/*"],
+	"ext": "ts",
 	"exec": "etsc && (node ./dist/src/bootstrap.js | node_modules/.bin/pino-pretty)"
 }
