@@ -3,13 +3,11 @@ import { z } from "zod";
 import { sendWorkflowDispatch } from "./github.js";
 import { decodeIdToken, getJwtVerifier } from "./id-token.js";
 import { evaluatePolicyForRequest, getPolicy } from "./policy.js";
-import { getLogger } from "../utils/logger.js";
+import { getLoggerForRequest } from "../utils/logger.js";
 
 import type { IdTokenClaims } from "./id-token.js";
 import type { PolicyInput } from "./policy.js";
-import type { RequestHandler, Request } from "express";
-
-const _logger = getLogger("handler/controller");
+import type { Request, RequestHandler } from "express";
 
 const bodySchema = z.object({
 	target: z.object({
@@ -75,14 +73,15 @@ export const dispatchControllerFactory: () => Promise<RequestHandler> =
 		const policy = await getPolicy();
 
 		return async (req, res) => {
-			_logger.debug({ req }, "Processing request");
+			const _reqLogger = getLoggerForRequest(req);
+			_reqLogger.debug({ req }, "Processing request");
 
 			// Validate the ID token.
 			let idToken;
 			try {
 				const idTokenValue = await extractIdToken(req);
 				if (!idTokenValue) {
-					_logger.warn("Missing ID token");
+					_reqLogger.warn("Missing ID token");
 					return res
 						.status(401)
 						.header("content-type", responseContentType)
@@ -91,7 +90,7 @@ export const dispatchControllerFactory: () => Promise<RequestHandler> =
 
 				idToken = await decodeIdToken(jwtVerifier, idTokenValue);
 			} catch (e) {
-				_logger.warn({ error: e }, "Failed to decode ID token");
+				_reqLogger.warn({ error: e }, "Failed to decode ID token");
 				return res
 					.status(400)
 					.header("content-type", responseContentType)
@@ -126,7 +125,7 @@ export const dispatchControllerFactory: () => Promise<RequestHandler> =
 						.json({ error: "Request blocked by policy" });
 				}
 			} catch (e) {
-				_logger.warn({ error: e }, "Failed to evaluate policy");
+				_reqLogger.warn({ error: e }, "Failed to evaluate policy");
 				return res
 					.status(401)
 					.header("content-type", responseContentType)
@@ -140,14 +139,14 @@ export const dispatchControllerFactory: () => Promise<RequestHandler> =
 					inputs: body.inputs,
 				});
 			} catch (e) {
-				_logger.warn({ error: e }, "Failed to send workflow dispatch");
+				_reqLogger.warn({ error: e }, "Failed to send workflow dispatch");
 				return res
 					.status(500)
 					.header("content-type", responseContentType)
 					.json({ error: "Failed to send workflow dispatch" });
 			}
 
-			_logger.info(policyInput, "Workflow dispatch created");
+			_reqLogger.info(policyInput, "Workflow dispatch created");
 
 			return res.status(200).json({
 				message: "workflow dispatch created",

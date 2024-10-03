@@ -1,5 +1,7 @@
 import bodyParser from "body-parser";
 import expressApp, { Router } from "express";
+import { randomUUID } from "node:crypto";
+import { pinoHttp } from "pino-http";
 
 import { dispatchControllerFactory } from "./dispatch/controller.js";
 import { getConfig } from "./utils/config.js";
@@ -31,6 +33,15 @@ interface BootstrapResult {
 }
 
 const logger = getLogger("bootstrap");
+const loggerMiddleware = pinoHttp({
+	logger: getLogger("http"),
+	genReqId: (_, res) => {
+		const id = randomUUID();
+		res.setHeader("x-request-id", id);
+
+		return id;
+	},
+});
 
 // Main entrypoint to the application, where all the startup logic is defined.
 // This function is immediately invoked when the file is imported.
@@ -83,6 +94,9 @@ export const bootstrap = (async (): Promise<BootstrapResult> => {
 			message: "ok",
 		});
 	});
+
+	// Mount the logger middleware.
+	app.use(loggerMiddleware);
 
 	// Mount the router on the base path.
 	// By default, the router is mounted on "/".
