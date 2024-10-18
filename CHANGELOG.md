@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.1](https://github.com/abinnovision/github-workflow-dispatch-proxy/compare/v1.0.0...v1.0.1) (2024-10-18)
+
+
+### Bug Fixes
+
+* exclude /healthz requests from auto-logging ([#26](https://github.com/abinnovision/github-workflow-dispatch-proxy/issues/26)) ([b0eeba4](https://github.com/abinnovision/github-workflow-dispatch-proxy/commit/b0eeba4d3d9d21fa3926abb08f2d86b275f8b7d0))
+
 ## 1.0.0 (2024-10-03)
 
 
