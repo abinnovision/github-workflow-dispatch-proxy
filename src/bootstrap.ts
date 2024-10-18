@@ -41,6 +41,15 @@ const loggerMiddleware = pinoHttp({
 
 		return id;
 	},
+	autoLogging: {
+		ignore: (req) => {
+			if (req.url?.endsWith("/healthz")) {
+				return true;
+			}
+
+			return false;
+		},
+	},
 });
 
 // Main entrypoint to the application, where all the startup logic is defined.
