@@ -11,18 +11,22 @@ of GitHub Actions and uses the provided ID token to authenticate the request.
 ## Installation
 
 The proxy is distributed as
-a [Docker image](https://github.com/abinnovision/github-workflow-dispatch-proxy/pkgs/container/github-workflow-dispatch-proxy):
+a Docker Image
+on [GitHub Container Registry](https://github.com/abinnovision/github-workflow-dispatch-proxy/pkgs/container/github-workflow-dispatch-proxy)
+and [Docker Hub](https://hub.docker.com/r/abinnovision/github-workflow-dispatch-proxy):
 
 [//]: # "x-release-please-start-version"
 
 ```bash
 docker run -d \
-  --name github-workflow-dispatch-proxy \
+  --name gwdp \
   -p 8080:8080 \
-  ghcr.io/abinnovision/github-workflow-dispatch-proxy:sha-6bd5b3d
+  abinnovision/github-workflow-dispatch-proxy:latest
 ```
 
 [//]: # "x-release-please-end"
+
+**NOTE:** Development builds are only available on GitHub Container Registry.
 
 ## Configuration
 
