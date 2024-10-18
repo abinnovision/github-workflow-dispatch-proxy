@@ -144,12 +144,32 @@ jobs:
             type=sha,enable=true
             # Version tag is only needed for released versions.
             type=semver,pattern={{version}},value=v${{ env.PKG_VERSION }},enable=${{ contains(fromJSON(needs.release.outputs.paths_released), '.') }}
+
+      # Extract metadata for Docker Hub.
+      # This is only needed for releases.
+      - name: Extract Metadata for Docker Hub
+        id: meta-dockerhub
+        uses: docker/metadata-action@v5
+        with:
+          images: abinnovision/github-workflow-dispatch-proxy
+          tags: |
+            type=semver,pattern={{version}},value=v${{ env.PKG_VERSION }},enable=${{ contains(fromJSON(needs.release.outputs.paths_released), '.') }}
+
       - name: Container Registry Auth
         uses: docker/login-action@v3
         with:
           registry: ${{ env.DOCKER_REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+
+      # Login to Docker Hub only if a release is published.
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        if: contains(fromJSON(needs.release.outputs.paths_released), '.')
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
       - name: Build image
         uses: docker/build-push-action@v4
         with:
@@ -157,7 +177,9 @@ jobs:
           push: true
           file: Dockerfile
           labels: ${{ steps.meta.outputs.labels }}
-          tags: ${{ steps.meta.outputs.tags }}
+          tags: |
+            ${{ steps.meta.outputs.tags }}
+            ${{ steps.meta-dockerhub.outputs.tags }}
           secrets: |
             NPM_ABINNOVISION_AUTH_TOKEN=${{ github.token }}
   cleanup-registry:
