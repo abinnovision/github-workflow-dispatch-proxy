@@ -1180,13 +1180,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@open-policy-agent/opa-wasm@npm:^1.9.0":
-  version: 1.9.0
-  resolution: "@open-policy-agent/opa-wasm@npm:1.9.0"
+"@open-policy-agent/opa-wasm@npm:^1.10.0":
+  version: 1.10.0
+  resolution: "@open-policy-agent/opa-wasm@npm:1.10.0"
   dependencies:
     sprintf-js: "npm:^1.1.2"
     yaml: "npm:^1.10.2"
-  checksum: 10/d66b7622beb9426eb30abb921340252e712d2aa86539c4a0ecd82696f29a1dd17f1b9f2bda63c7f6dac610d297cc3495817d86ad77b290a0013c0f9e7d4dbede
+  checksum: 10/dbd84bb17c765f3e882bc0903f43281bcb8aa7a971cc8c2989a6522c75ec7ea1a7abe652be9c3e37d5fbf49ca14f9c417344afff51e95e580f04e66f5ab1ded0
   languageName: node
   linkType: hard
 
@@ -3851,7 +3851,7 @@ __metadata:
     "@commitlint/cli": "npm:^19.5.0"
     "@octokit/auth-app": "npm:^7.1.1"
     "@octokit/auth-callback": "npm:^5.0.1"
-    "@open-policy-agent/opa-wasm": "npm:^1.9.0"
+    "@open-policy-agent/opa-wasm": "npm:^1.10.0"
     "@types/body-parser": "npm:^1"
     "@types/express": "npm:^4"
     "@types/node": "npm:^22.7.4"
