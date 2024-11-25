@@ -1466,12 +1466,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*, @types/node@npm:^22.7.4":
+"@types/node@npm:*":
   version: 22.7.4
   resolution: "@types/node@npm:22.7.4"
   dependencies:
     undici-types: "npm:~6.19.2"
   checksum: 10/19ddab80c4eba2253c855ed67c9bbc47417183049d01e59010a738bd80d47338bab79fd1f44ae51516bd63a1db4bf21ddb38b16bf6401a2e93252068ec52e88b
+  languageName: node
+  linkType: hard
+
+"@types/node@npm:^22.9.3":
+  version: 22.9.3
+  resolution: "@types/node@npm:22.9.3"
+  dependencies:
+    undici-types: "npm:~6.19.8"
+  checksum: 10/c32a03ff998b8c6cf7d653216508a92b1e6569dd5031ea6cfc2aaa8c75ebbf4172bf1602f0e1f673086e210787dc96667b99ba4d919bc151f9a1f88aeac42822
   languageName: node
   linkType: hard
 
@@ -3854,7 +3863,7 @@ __metadata:
     "@open-policy-agent/opa-wasm": "npm:^1.10.0"
     "@types/body-parser": "npm:^1"
     "@types/express": "npm:^4"
-    "@types/node": "npm:^22.7.4"
+    "@types/node": "npm:^22.9.3"
     "@types/supertest": "npm:^6.0.2"
     "@vitest/coverage-v8": "npm:^2.1.1"
     body-parser: "npm:^1.20.3"
@@ -6917,7 +6926,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"undici-types@npm:~6.19.2":
+"undici-types@npm:~6.19.2, undici-types@npm:~6.19.8":
   version: 6.19.8
   resolution: "undici-types@npm:6.19.8"
   checksum: 10/cf0b48ed4fc99baf56584afa91aaffa5010c268b8842f62e02f752df209e3dea138b372a60a963b3b2576ed932f32329ce7ddb9cb5f27a6c83040d8cd74b7a70
