@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0](https://github.com/abinnovision/github-workflow-dispatch-proxy/compare/v1.0.1...v1.1.0) (2025-01-12)
+
+
+### Features
+
+* migrate to cross-policy ([#66](https://github.com/abinnovision/github-workflow-dispatch-proxy/issues/66)) ([8a14262](https://github.com/abinnovision/github-workflow-dispatch-proxy/commit/8a142624e28a8126690e737663e81301a8d7b6eb))
+
 ## [1.0.1](https://github.com/abinnovision/github-workflow-dispatch-proxy/compare/v1.0.0...v1.0.1) (2024-10-18)
 
 
