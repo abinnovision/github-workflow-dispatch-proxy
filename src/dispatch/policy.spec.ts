@@ -1,17 +1,6 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-
-import type { evaluatePolicyForRequest, getPolicy } from "./policy.js";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 describe("handler/policy", () => {
-	let getPolicyFn: typeof getPolicy;
-	let evaluatePolicyForRequestFn: typeof evaluatePolicyForRequest;
-
-	beforeEach(async () => {
-		const imported = await import("./policy.js");
-		getPolicyFn = imported.getPolicy;
-		evaluatePolicyForRequestFn = imported.evaluatePolicyForRequest;
-	});
-
 	afterEach(() => {
 		vi.resetModules();
 	});
@@ -20,7 +9,9 @@ describe("handler/policy", () => {
 		vi.stubEnv("APP_GH_AUTH_TYPE", "token");
 		vi.stubEnv("APP_GH_AUTH_TOKEN", "token");
 
-		const result = await evaluatePolicyForRequestFn(await getPolicyFn(), {
+		const { evaluatePolicyForRequest } = await import("./policy.js");
+
+		const result = await evaluatePolicyForRequest({
 			target: {
 				owner: "abinnovison",
 				repository: "github-workflow-dispatch-proxy",
@@ -49,7 +40,9 @@ describe("handler/policy", () => {
 			vi.stubEnv("APP_POLICY_TYPE", "allow_org_wide");
 			vi.stubEnv("APP_POLICY_CONFIG", "organization=abinnovison");
 
-			const result = await evaluatePolicyForRequestFn(await getPolicyFn(), {
+			const { evaluatePolicyForRequest } = await import("./policy.js");
+
+			const result = await evaluatePolicyForRequest({
 				target: {
 					owner: "abinnovison",
 					repository: "github-workflow-dispatch-proxy",
@@ -77,7 +70,9 @@ describe("handler/policy", () => {
 			vi.stubEnv("APP_POLICY_TYPE", "allow_org_wide");
 			vi.stubEnv("APP_POLICY_CONFIG", "organization=abinnovison-test");
 
-			const result = await evaluatePolicyForRequestFn(await getPolicyFn(), {
+			const { evaluatePolicyForRequest } = await import("./policy.js");
+
+			const result = await evaluatePolicyForRequest({
 				target: {
 					owner: "abinnovison",
 					repository: "github-workflow-dispatch-proxy",
@@ -104,7 +99,9 @@ describe("handler/policy", () => {
 			vi.stubEnv("APP_GH_AUTH_TOKEN", "token");
 			vi.stubEnv("APP_POLICY_TYPE", "allow_org_wide");
 
-			const result = await evaluatePolicyForRequestFn(await getPolicyFn(), {
+			const { evaluatePolicyForRequest } = await import("./policy.js");
+
+			const result = await evaluatePolicyForRequest({
 				target: {
 					owner: "abinnovison",
 					repository: "github-workflow-dispatch-proxy",

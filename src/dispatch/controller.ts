@@ -2,7 +2,7 @@ import { z } from "zod";
 
 import { sendWorkflowDispatch } from "./github.js";
 import { decodeIdToken, getJwtVerifier } from "./id-token.js";
-import { evaluatePolicyForRequest, getPolicy } from "./policy.js";
+import { evaluatePolicyForRequest } from "./policy.js";
 import { getLoggerForRequest } from "../utils/logger.js";
 
 import type { IdTokenClaims } from "./id-token.js";
@@ -70,7 +70,6 @@ const extractIdToken = async (req: Request): Promise<string | undefined> => {
 export const dispatchControllerFactory: () => Promise<RequestHandler> =
 	async () => {
 		const jwtVerifier = await getJwtVerifier();
-		const policy = await getPolicy();
 
 		return async (req, res) => {
 			const _reqLogger = getLoggerForRequest(req);
@@ -113,10 +112,7 @@ export const dispatchControllerFactory: () => Promise<RequestHandler> =
 
 			// Evaluate the policy.
 			try {
-				const policyResult = await evaluatePolicyForRequest(
-					policy,
-					policyInput
-				);
+				const policyResult = await evaluatePolicyForRequest(policyInput);
 
 				if (!policyResult) {
 					return res

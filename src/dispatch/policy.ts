@@ -1,16 +1,36 @@
-import { loadPolicy } from "@open-policy-agent/opa-wasm";
-import * as fsp from "fs/promises";
+import { createCrossPolicy } from "@cross-policy/core";
+import { opaWasmPolicyTarget } from "@cross-policy/target-opa-wasm";
 import * as path from "path";
 import z from "zod";
 
 import { getConfig } from "../utils/config.js";
 
-import type opa from "@open-policy-agent/opa-wasm";
+// The built-in policies.
+const builtInPolicyMapping = {
+	allow_all: "allow_all.wasm",
+	allow_org_wide: "allow_org_wide.wasm",
+};
 
 /**
- * Full schema which will be passed to the policy as context.
+ * Provides the policy to use based on the current config.
  */
-const policyContextSchema = z.object({
+function getPolicyPath(): string {
+	const config = getConfig();
+
+	let policyPath: string;
+	if (config.POLICY === "custom") {
+		policyPath = config.POLICY_PATH;
+	} else {
+		policyPath = path.join(
+			process.env.POLICY_DIR as string,
+			builtInPolicyMapping[config.POLICY_TYPE]
+		);
+	}
+
+	return policyPath;
+}
+
+const schema = z.object({
 	config: z.record(z.string()),
 
 	target: z.object({
@@ -30,11 +50,10 @@ const policyContextSchema = z.object({
 	}),
 });
 
-// The built-in policies.
-const builtInPolicyMapping = {
-	allow_all: "allow_all.wasm",
-	allow_org_wide: "allow_org_wide.wasm",
-};
+const crossPolicy = createCrossPolicy({
+	target: opaWasmPolicyTarget({ policyPath: getPolicyPath() }),
+	schema,
+});
 
 /**
  * Parses the policy configuration.
@@ -53,92 +72,12 @@ async function parsePolicyConfig(
 	return config;
 }
 
-/**
- * Evaluates the given policy with the provided context.
- * The context must be a valid object, according to the schema.
- *
- * @param policy The policy to evaluate.
- * @param context The context to evaluate the policy with.
- */
-async function evaluatePolicy(
-	policy: opa.LoadedPolicy,
-	context: z.infer<typeof policyContextSchema>
-): Promise<boolean> {
-	// Validate whether the context is valid.
-	try {
-		await policyContextSchema.parseAsync(context);
-	} catch (error) {
-		throw new PolicyError(
-			"Invalid context provided",
-			error instanceof Error ? error : undefined
-		);
-	}
-
-	let evaluationResult;
-	try {
-		evaluationResult = policy.evaluate(context);
-	} catch (error) {
-		throw new PolicyError(
-			"Failed to evaluate policy",
-			error instanceof Error ? error : undefined
-		);
-	}
-
-	const result = evaluationResult[0]?.result?.allow ?? undefined;
-
-	// The result must be a boolean. Undefined indicates an invalid policy.
-	if (result === undefined) {
-		throw new PolicyError("Policy did not return a result");
-	}
-
-	return result;
-}
-
-/**
- * Error thrown when something around the policy fails.
- */
-export class PolicyError extends Error {
-	public constructor(message: string, cause?: Error) {
-		super(message);
-		this.name = "PolicyError";
-		this.cause = cause;
-	}
-}
-
-/**
- * Provides the policy to use based on the current config.
- */
-export async function getPolicy(): Promise<opa.LoadedPolicy> {
-	const config = getConfig();
-
-	// Decide which policy to use.
-	try {
-		let policyFile: ArrayBuffer;
-		if (config.POLICY === "custom") {
-			policyFile = await fsp.readFile(config.POLICY_PATH);
-		} else {
-			policyFile = await fsp.readFile(
-				path.join(
-					process.env.POLICY_DIR as string,
-					builtInPolicyMapping[config.POLICY_TYPE]
-				)
-			);
-		}
-
-		return loadPolicy(policyFile);
-	} catch (e) {
-		throw new PolicyError(
-			"Failed to load policy file",
-			e instanceof Error ? e : undefined
-		);
-	}
-}
+export type PolicyInput = Pick<z.infer<typeof schema>, "caller" | "target">;
 
 /**
  * Evaluates the given policy using the inputs provided.
  */
 export async function evaluatePolicyForRequest(
-	policy: opa.LoadedPolicy,
 	input: Pick<PolicyInput, "target" | "caller">
 ): Promise<boolean> {
 	const config = getConfig();
@@ -148,13 +87,8 @@ export async function evaluatePolicyForRequest(
 		? await parsePolicyConfig(config.POLICY_CONFIG)
 		: {};
 
-	return await evaluatePolicy(policy, {
+	return await crossPolicy.evaluate({
 		...input,
 		config: inputConfig,
 	});
 }
-
-export type PolicyInput = Pick<
-	z.infer<typeof policyContextSchema>,
-	"caller" | "target"
->;
