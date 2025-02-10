@@ -79,7 +79,7 @@
 		"@vitest/coverage-v8": "^2.1.1",
 		"cpy": "^11.1.0",
 		"dotenv-cli": "^8.0.0",
-		"esbuild": "^0.24.0",
+		"esbuild": "^0.25.0",
 		"esbuild-node-tsc": "^2.0.5",
 		"eslint": "^9.13.0",
 		"get-port-please": "^3.1.2",
