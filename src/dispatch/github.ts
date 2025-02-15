@@ -44,11 +44,11 @@ let _baseOctokit = new Octokit({
  */
 async function runOctokit<T>(
 	token: string,
-	callback: (octokit: Octokit) => Promise<T>
+	callback: (octokit: Octokit) => Promise<T>,
 ): Promise<T> {
 	return await _authCallbackAls.run(
 		token,
-		async () => await callback(_baseOctokit)
+		async () => await callback(_baseOctokit),
 	);
 }
 
@@ -83,7 +83,7 @@ async function resolveAccessToken(id: RepositoryIdentity): Promise<string> {
 						});
 
 						return data.id;
-					}
+					},
 				);
 
 				const installationAuth = await createAppAuth({
@@ -99,7 +99,7 @@ async function resolveAccessToken(id: RepositoryIdentity): Promise<string> {
 			} catch (e) {
 				throw new GitHubAuthError(
 					"Failed to resolve access token",
-					e instanceof Error ? e : undefined
+					e instanceof Error ? e : undefined,
 				);
 			}
 		}
@@ -114,7 +114,7 @@ async function resolveAccessToken(id: RepositoryIdentity): Promise<string> {
  * @param id Identification of the repository.
  */
 export async function getRepositoryDefaultBranch(
-	id: RepositoryIdentity
+	id: RepositoryIdentity,
 ): Promise<string> {
 	try {
 		const { data } = await _baseOctokit.rest.repos.get({
@@ -126,7 +126,7 @@ export async function getRepositoryDefaultBranch(
 	} catch (e) {
 		throw new GitHubAuthError(
 			"Failed to resolve default branch",
-			e instanceof Error ? e : undefined
+			e instanceof Error ? e : undefined,
 		);
 	}
 }
@@ -150,7 +150,7 @@ export async function sendWorkflowDispatch(opts: WorkflowDispatchOpts) {
 	} catch (e) {
 		throw new GitHubDispatchError(
 			"Failed to dispatch workflow",
-			e instanceof Error ? e : undefined
+			e instanceof Error ? e : undefined,
 		);
 	}
 }
