@@ -4,8 +4,8 @@ import nock from "nock";
 import request from "supertest";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { setupOAuthServer } from "../utils/setup-oauth-server.js";
-import { testDataIdTokenClaims } from "../utils/test-data.js";
+import { setupOAuthServer } from "../../utils/setup-oauth-server.js";
+import { testDataIdTokenClaims } from "../../utils/test-data.js";
 
 import type { Agent } from "supertest";
 
@@ -33,7 +33,7 @@ describe("dispatch-handler", () => {
 
 	describe("default config", () => {
 		beforeEach(async () => {
-			const bootstrap = await import("../../src/bootstrap.js");
+			const bootstrap = await import("../../../src/bootstrap.js");
 
 			// Save the shutdown handler for later.
 			shutdownHandler = (await bootstrap.bootstrap).shutdown;

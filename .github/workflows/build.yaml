@@ -46,8 +46,8 @@ jobs:
         run: |
           yarn dedupe
           git diff --exit-code --quiet yarn.lock || (echo "yarn.lock is not up to date, run 'yarn dedupe'" && exit 1)
-  build:
-    name: Build
+  build_test:
+    name: Build & Test
     runs-on: ubuntu-22.04
     needs:
       - configure
@@ -63,40 +63,8 @@ jobs:
         run: yarn install --immutable
       - name: Build
         run: yarn build
-  test-unit:
-    name: Test (Unit)
-    runs-on: ubuntu-22.04
-    needs:
-      - configure
-      - build
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ needs.configure.outputs.commit-sha }}
-      - name: Setup Node.js
-        uses: abinnovision/actions@setup-node-v1
-      - name: Install dependencies
-        run: yarn install --immutable
       - name: Test
-        run: yarn test-unit
-  test-integration:
-    name: Test (Integration)
-    runs-on: ubuntu-22.04
-    needs:
-      - configure
-      - build
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ needs.configure.outputs.commit-sha }}
-      - name: Setup Node.js
-        uses: abinnovision/actions@setup-node-v1
-      - name: Install dependencies
-        run: yarn install --immutable
-      - name: Test
-        run: yarn test-integration
+        run: yarn run test
   release:
     name: Release
     uses: abinnovision/workflows/.github/workflows/release-please.yaml@master
@@ -111,8 +79,7 @@ jobs:
     runs-on: ubuntu-22.04
     needs:
       - configure
-      - build
-      - test-unit
+      - build_test
       - release
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     env:
