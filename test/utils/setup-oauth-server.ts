@@ -20,7 +20,7 @@ interface SetupOAuthServerHolder {
  * @returns The OAuth server holder.
  */
 export const setupOAuthServer = (
-	opts?: SetupOAuthServerOpts
+	opts?: SetupOAuthServerOpts,
 ): SetupOAuthServerHolder => {
 	let oAuthServer: OAuth2Server | undefined;
 

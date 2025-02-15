@@ -54,7 +54,7 @@ export const getJwtVerifier = async (): Promise<JWTVerifyGetKey> => {
 	} catch (e) {
 		throw new IdTokenError(
 			"Failed to discover issuer",
-			e instanceof Error ? e : undefined
+			e instanceof Error ? e : undefined,
 		);
 	}
 
@@ -75,7 +75,7 @@ export const getJwtVerifier = async (): Promise<JWTVerifyGetKey> => {
  */
 export const decodeIdToken = async (
 	jwtVerifier: JWTVerifyGetKey,
-	token: string
+	token: string,
 ): Promise<IdTokenClaims> => {
 	const config = getConfig();
 
@@ -89,7 +89,7 @@ export const decodeIdToken = async (
 	} catch (e) {
 		throw new IdTokenError(
 			"Failed to decode/verify IdToken",
-			e instanceof Error ? e : undefined
+			e instanceof Error ? e : undefined,
 		);
 	}
 };

@@ -77,7 +77,7 @@ export const bootstrap = (async (): Promise<BootstrapResult> => {
 			.status(200)
 			.header(
 				"cache-control",
-				"public, max-age 172800, stale-while-revalidate 172800"
+				"public, max-age 172800, stale-while-revalidate 172800",
 			)
 			.header("content-type", "application/yaml")
 			.send(content);
@@ -91,7 +91,7 @@ export const bootstrap = (async (): Promise<BootstrapResult> => {
 			.status(200)
 			.header(
 				"cache-control",
-				"public, max-age 172800, stale-while-revalidate 172800"
+				"public, max-age 172800, stale-while-revalidate 172800",
 			)
 			.header("content-type", "application/json")
 			.send(content);

@@ -23,7 +23,7 @@ function getPolicyPath(): string {
 	} else {
 		policyPath = path.join(
 			process.env.POLICY_DIR as string,
-			builtInPolicyMapping[config.POLICY_TYPE]
+			builtInPolicyMapping[config.POLICY_TYPE],
 		);
 	}
 
@@ -60,7 +60,7 @@ const crossPolicy = createCrossPolicy({
  * @param value
  */
 async function parsePolicyConfig(
-	value: string
+	value: string,
 ): Promise<Record<string, string>> {
 	const config: Record<string, string> = {};
 
@@ -78,7 +78,7 @@ export type PolicyInput = Pick<z.infer<typeof schema>, "caller" | "target">;
  * Evaluates the given policy using the inputs provided.
  */
 export async function evaluatePolicyForRequest(
-	input: Pick<PolicyInput, "target" | "caller">
+	input: Pick<PolicyInput, "target" | "caller">,
 ): Promise<boolean> {
 	const config = getConfig();
 

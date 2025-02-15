@@ -26,7 +26,7 @@ export default {
 		const fsp = await import("node:fs/promises");
 		await fsp.writeFile(
 			"dist/package.json",
-			JSON.stringify({ type: "module" })
+			JSON.stringify({ type: "module" }),
 		);
 	},
 };

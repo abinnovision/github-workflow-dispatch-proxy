@@ -87,26 +87,26 @@ The input schema for the policy is defined as follows:
 
 ```json5
 {
-	// Can be empty if not provided.
-	config: {
-		key: "value",
-	},
-	target: {
-		owner: "owner",
-		repository: "repository",
-		ref: "ref",
-		workflow: "workflow",
-		// Can be empty if none are required.
-		inputs: {
-			key: "value",
-		},
-	},
-	caller: {
-		owner: "owner",
-		repository: "repository",
-		ref: "ref",
-		workflow: "workflow",
-	},
+  // Can be empty if not provided.
+  config: {
+    key: "value",
+  },
+  target: {
+    owner: "owner",
+    repository: "repository",
+    ref: "ref",
+    workflow: "workflow",
+    // Can be empty if none are required.
+    inputs: {
+      key: "value",
+    },
+  },
+  caller: {
+    owner: "owner",
+    repository: "repository",
+    ref: "ref",
+    workflow: "workflow",
+  },
 }
 ```
 

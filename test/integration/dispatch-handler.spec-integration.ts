@@ -49,7 +49,7 @@ describe("dispatch-handler", () => {
 
 			nock("https://api.github.com")
 				.post(
-					"/repos/octo-org/octo-repo/actions/workflows/example-workflow/dispatches"
+					"/repos/octo-org/octo-repo/actions/workflows/example-workflow/dispatches",
 				)
 				.reply(200);
 
@@ -77,7 +77,7 @@ describe("dispatch-handler", () => {
 
 			const dispatchScope = nock("https://api.github.com")
 				.post(
-					"/repos/octo-org/octo-repo/actions/workflows/example-workflow/dispatches"
+					"/repos/octo-org/octo-repo/actions/workflows/example-workflow/dispatches",
 				)
 				.reply((uri, body) => {
 					if ((body as any).ref !== _testDefaultBranch) {
@@ -117,7 +117,7 @@ describe("dispatch-handler", () => {
 
 			const dispatchScope = nock("https://api.github.com")
 				.post(
-					"/repos/octo-org/octo-repo/actions/workflows/example-workflow/dispatches"
+					"/repos/octo-org/octo-repo/actions/workflows/example-workflow/dispatches",
 				)
 				.reply(200);
 

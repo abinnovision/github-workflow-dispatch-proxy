@@ -45,7 +45,7 @@ const githubAuthSchema = z.discriminatedUnion("GH_AUTH_TYPE", [
 
 const configSchema = z.intersection(
 	baseSchema,
-	z.intersection(policySchema, githubAuthSchema)
+	z.intersection(policySchema, githubAuthSchema),
 );
 
 /**
@@ -73,7 +73,7 @@ function parseConfig(): z.infer<typeof configSchema> {
 		Object.entries(process.env)
 			.filter(([key]) => key.startsWith(PREFIX))
 			.filter((it): it is [string, string] => it[1] !== undefined)
-			.map(([key, value]) => [key.slice(PREFIX.length), value])
+			.map(([key, value]) => [key.slice(PREFIX.length), value]),
 	);
 
 	// Apply the defaults to the environment variables.
