@@ -20,9 +20,16 @@ paths:
           application/json:
             schema:
               type: object
+              required:
+                - target
+                - input
               properties:
                 target:
                   type: object
+                  required:
+                    - owner
+                    - repo
+                    - workflow
                   properties:
                     owner:
                       type: string

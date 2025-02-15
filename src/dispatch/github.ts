@@ -14,8 +14,8 @@ interface RepositoryIdentity {
 interface WorkflowDispatchOpts {
 	owner: string;
 	repo: string;
-	ref: string;
 	workflow: string;
+	ref: string;
 	inputs?: Record<string, string>;
 }
 
@@ -105,6 +105,29 @@ async function resolveAccessToken(id: RepositoryIdentity): Promise<string> {
 		}
 
 		return _tokenCache.get(key)!;
+	}
+}
+
+/**
+ * Resolves the default branch for the given repository.
+ *
+ * @param id Identification of the repository.
+ */
+export async function getRepositoryDefaultBranch(
+	id: RepositoryIdentity
+): Promise<string> {
+	try {
+		const { data } = await _baseOctokit.rest.repos.get({
+			owner: id.owner,
+			repo: id.repo,
+		});
+
+		return data.default_branch;
+	} catch (e) {
+		throw new GitHubAuthError(
+			"Failed to resolve default branch",
+			e instanceof Error ? e : undefined
+		);
 	}
 }
 

@@ -1,11 +1,10 @@
 import { z } from "zod";
 
-import { sendWorkflowDispatch } from "./github.js";
+import { getRepositoryDefaultBranch, sendWorkflowDispatch } from "./github.js";
 import { decodeIdToken, getJwtVerifier } from "./id-token.js";
 import { evaluatePolicyForRequest } from "./policy.js";
 import { getLoggerForRequest } from "../utils/logger.js";
 
-import type { IdTokenClaims } from "./id-token.js";
 import type { PolicyInput } from "./policy.js";
 import type { Request, RequestHandler } from "express";
 
@@ -13,7 +12,7 @@ const bodySchema = z.object({
 	target: z.object({
 		owner: z.string(),
 		repo: z.string(),
-		ref: z.string(),
+		ref: z.string().optional(),
 		workflow: z.string(),
 	}),
 
@@ -22,31 +21,6 @@ const bodySchema = z.object({
 
 const responseContentType = "application/json";
 const authorizationHeaderPrefix = "Bearer ";
-
-/**
- * Map the request body to a policy input.
- *
- * @param body
- * @param idToken
- */
-const mapPolicyInput = (
-	body: z.infer<typeof bodySchema>,
-	idToken: IdTokenClaims
-): Pick<PolicyInput, "target" | "caller"> => ({
-	target: {
-		owner: body.target.owner,
-		repository: body.target.repo,
-		ref: body.target.ref,
-		workflow: body.target.workflow,
-		inputs: body.inputs,
-	},
-	caller: {
-		owner: idToken.repository_owner,
-		repository: idToken.repository.split("/")[1],
-		ref: idToken.ref,
-		workflow: idToken.workflow,
-	},
-});
 
 /**
  * Extracts the ID token from the request.
@@ -107,8 +81,32 @@ export const dispatchControllerFactory: () => Promise<RequestHandler> =
 					.json({ error: "Invalid request body" });
 			}
 
+			// The ref is optional, so we need to check if it is present.
+			// If it's not present, we need to resolve the default branch.
+			let enrichedTargetRef = body.target.ref;
+			if (!enrichedTargetRef) {
+				enrichedTargetRef = await getRepositoryDefaultBranch({
+					owner: body.target.owner,
+					repo: body.target.repo,
+				});
+			}
+
 			// Map the body to the policy input.
-			const policyInput = mapPolicyInput(body, idToken);
+			const policyInput: PolicyInput = {
+				target: {
+					owner: body.target.owner,
+					repository: body.target.repo,
+					ref: enrichedTargetRef,
+					workflow: body.target.workflow,
+					inputs: body.inputs,
+				},
+				caller: {
+					owner: idToken.repository_owner,
+					repository: idToken.repository.split("/")[1],
+					ref: idToken.ref,
+					workflow: idToken.workflow,
+				},
+			};
 
 			// Evaluate the policy.
 			try {
@@ -132,6 +130,7 @@ export const dispatchControllerFactory: () => Promise<RequestHandler> =
 			try {
 				await sendWorkflowDispatch({
 					...body.target,
+					ref: enrichedTargetRef,
 					inputs: body.inputs,
 				});
 			} catch (e) {
