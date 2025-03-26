@@ -1,33 +1,40 @@
 import { createCrossPolicy } from "@cross-policy/core";
+import { celPolicyTarget } from "@cross-policy/target-cel";
 import { opaWasmPolicyTarget } from "@cross-policy/target-opa-wasm";
-import * as path from "path";
 import z from "zod";
 
 import { getConfig } from "../utils/config.js";
 
-// The built-in policies.
-const builtInPolicyMapping = {
-	allow_all: "allow_all.wasm",
-	allow_org_wide: "allow_org_wide.wasm",
+/**
+ * Built-in expressions written in CEL.
+ */
+const builtinExpressions = {
+	allow_all: `true`,
+	allow_org_wide: `config.organization == caller.owner && config.organization == target.owner`,
 };
 
 /**
- * Provides the policy to use based on the current config.
+ * Creates the cross-policy compatible target based on the current config.
  */
-function getPolicyPath(): string {
+function createCrossPolicyTarget() {
 	const config = getConfig();
 
-	let policyPath: string;
-	if (config.POLICY === "custom") {
-		policyPath = config.POLICY_PATH;
+	if (config.POLICY === "opa-wasm") {
+		return opaWasmPolicyTarget({
+			policyPath: config.POLICY_PATH,
+		});
+	} else if (config.POLICY === "cel") {
+		return celPolicyTarget({
+			expression: config.POLICY_EXPRESSION,
+		});
+	} else if (config.POLICY === "builtin") {
+		return celPolicyTarget({
+			expression: builtinExpressions[config.POLICY_TYPE],
+		});
 	} else {
-		policyPath = path.join(
-			process.env.POLICY_DIR as string,
-			builtInPolicyMapping[config.POLICY_TYPE],
-		);
+		// This should never happen.
+		throw new Error(`Unsupported policy type`);
 	}
-
-	return policyPath;
 }
 
 const schema = z.object({
@@ -51,7 +58,7 @@ const schema = z.object({
 });
 
 const crossPolicy = createCrossPolicy({
-	target: opaWasmPolicyTarget({ policyPath: getPolicyPath() }),
+	target: createCrossPolicyTarget(),
 	schema,
 });
 

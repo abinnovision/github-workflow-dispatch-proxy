@@ -123,4 +123,36 @@ describe("handler/policy", () => {
 			expect(result).toBe(false);
 		});
 	});
+
+	describe("target/cel", () => {
+		it("should throw exception on invalid expression", async () => {
+			vi.stubEnv("APP_GH_AUTH_TYPE", "token");
+			vi.stubEnv("APP_GH_AUTH_TOKEN", "token");
+			vi.stubEnv("APP_POLICY", "cel");
+			vi.stubEnv("APP_POLICY_EXPRESSION", "this is not a valid expression");
+
+			const { evaluatePolicyForRequest } = await import("./policy.js");
+
+			await expect(
+				evaluatePolicyForRequest({
+					target: {
+						owner: "abinnovison",
+						repository: "github-workflow-dispatch-proxy",
+						ref: "main",
+						workflow: "update-version",
+
+						inputs: {
+							test: "test",
+						},
+					},
+					caller: {
+						owner: "abinnovison",
+						repository: "github-workflow-dispatch-proxy",
+						ref: "main",
+						workflow: "build",
+					},
+				}),
+			).rejects.toThrow();
+		});
+	});
 });

@@ -25,8 +25,13 @@ const policySchema = z.discriminatedUnion("POLICY", [
 		POLICY_CONFIG: z.string().optional(),
 	}),
 	z.object({
-		POLICY: z.literal("custom"),
+		POLICY: z.literal("opa-wasm"),
 		POLICY_PATH: z.string(),
+		POLICY_CONFIG: z.string().optional(),
+	}),
+	z.object({
+		POLICY: z.literal("cel"),
+		POLICY_EXPRESSION: z.string(),
 		POLICY_CONFIG: z.string().optional(),
 	}),
 ]);
