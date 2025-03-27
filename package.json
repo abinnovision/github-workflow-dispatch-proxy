@@ -54,6 +54,7 @@
 	"prettier": "@abinnovision/prettier-config",
 	"dependencies": {
 		"@cross-policy/core": "^0.1.0",
+		"@cross-policy/target-cel": "^0.1.0",
 		"@cross-policy/target-opa-wasm": "^0.1.0",
 		"@octokit/auth-app": "^7.1.1",
 		"@octokit/auth-callback": "^5.0.1",
