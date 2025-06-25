@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.1](https://github.com/abinnovision/github-workflow-dispatch-proxy/compare/v1.1.0...v1.1.1) (2025-06-25)
+
+
+### Bug Fixes
+
+* add authentication to repo.get request ([#98](https://github.com/abinnovision/github-workflow-dispatch-proxy/issues/98)) ([42ee1bb](https://github.com/abinnovision/github-workflow-dispatch-proxy/commit/42ee1bb3bd23732c52643e564c74d9c0b9ca9da1))
+
 ## [1.1.0](https://github.com/abinnovision/github-workflow-dispatch-proxy/compare/v1.0.1...v1.1.0) (2025-06-25)
 
 
