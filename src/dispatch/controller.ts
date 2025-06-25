@@ -88,10 +88,19 @@ export const dispatchControllerFactory: () => Promise<RequestHandler> =
 			// If it's not present, we need to resolve the default branch.
 			let enrichedTargetRef = body.target.ref;
 			if (!enrichedTargetRef) {
-				enrichedTargetRef = await getRepositoryDefaultBranch({
-					owner: body.target.owner,
-					repo: body.target.repo,
-				});
+				try {
+					enrichedTargetRef = await getRepositoryDefaultBranch({
+						owner: body.target.owner,
+						repo: body.target.repo,
+					});
+				} catch (e) {
+					_reqLogger.warn({ error: e }, "Failed to resolve default branch");
+
+					return res
+						.status(400)
+						.header("content-type", responseContentType)
+						.json({ error: "Failed to resolve default branch" });
+				}
 			}
 
 			// Map the body to the policy input.
