@@ -74,6 +74,10 @@ export const dispatchControllerFactory: () => Promise<RequestHandler> =
 			try {
 				body = await bodySchema.parseAsync(await req.body);
 			} catch (e) {
+				_reqLogger.warn(
+					{ error: e, body: req.body },
+					"Failed to parse request body",
+				);
 				return res
 					.status(400)
 					.header("content-type", responseContentType)
