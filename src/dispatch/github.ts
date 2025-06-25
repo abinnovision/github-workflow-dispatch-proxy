@@ -116,10 +116,21 @@ async function resolveAccessToken(id: RepositoryIdentity): Promise<string> {
 export async function getRepositoryDefaultBranch(
 	id: RepositoryIdentity,
 ): Promise<string> {
+	// We need to fetch the metadata of the repository, which might be private.
+	// Therefore, we also need the access token.
+	const token = await resolveAccessToken({
+		owner: id.owner,
+		repo: id.repo,
+	});
+
 	try {
-		const { data } = await _baseOctokit.rest.repos.get({
-			owner: id.owner,
-			repo: id.repo,
+		const data = await runOctokit(token, async (octokit) => {
+			const { data } = await octokit.rest.repos.get({
+				owner: id.owner,
+				repo: id.repo,
+			});
+
+			return data;
 		});
 
 		return data.default_branch;
