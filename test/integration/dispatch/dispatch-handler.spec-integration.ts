@@ -112,6 +112,49 @@ describe("dispatch-handler", () => {
 			getScope.done();
 		});
 
+		it("should resolve the default branch if ref string is empty", async () => {
+			const _testDefaultBranch = "main-default";
+
+			const idToken = await oAuthServer.buildToken(testDataIdTokenClaims);
+
+			const dispatchScope = nock("https://api.github.com")
+				.post(
+					"/repos/octo-org/octo-repo/actions/workflows/example-workflow/dispatches",
+				)
+				.reply((uri, body) => {
+					if ((body as any).ref !== _testDefaultBranch) {
+						return [400];
+					}
+
+					return [200];
+				});
+
+			const getScope = nock("https://api.github.com")
+				.get("/repos/octo-org/octo-repo")
+				.reply(200, () => ({
+					default_branch: _testDefaultBranch,
+				}));
+
+			await st
+				.post("/dispatch")
+				.auth(idToken, { type: "bearer" })
+				.send({
+					target: {
+						owner: "octo-org",
+						repo: "octo-repo",
+						workflow: "example-workflow",
+						ref: "",
+					},
+					inputs: {
+						type: "production",
+					},
+				})
+				.expect(200);
+
+			dispatchScope.done();
+			getScope.done();
+		});
+
 		it("should not load default branch if ref is given", async () => {
 			const idToken = await oAuthServer.buildToken(testDataIdTokenClaims);
 
