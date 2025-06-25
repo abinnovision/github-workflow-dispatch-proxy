@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.1.0](https://github.com/abinnovision/github-workflow-dispatch-proxy/compare/v1.0.1...v1.1.0) (2025-06-25)
+
+
+### Features
+
+* migrate to cross-policy ([#66](https://github.com/abinnovision/github-workflow-dispatch-proxy/issues/66)) ([8a14262](https://github.com/abinnovision/github-workflow-dispatch-proxy/commit/8a142624e28a8126690e737663e81301a8d7b6eb))
+* set "ref" as optional and fetch the default branch if necessary ([#91](https://github.com/abinnovision/github-workflow-dispatch-proxy/issues/91)) ([4f9b66e](https://github.com/abinnovision/github-workflow-dispatch-proxy/commit/4f9b66eedb8063b3666c589b570d7914af8520c8))
+* support CEL as policy ([#97](https://github.com/abinnovision/github-workflow-dispatch-proxy/issues/97)) ([976c065](https://github.com/abinnovision/github-workflow-dispatch-proxy/commit/976c065ae0f535d8263788cb15168576b54fe3ec))
+
+
+### Bug Fixes
+
+* add warning log when request body is invalid ([39749fc](https://github.com/abinnovision/github-workflow-dispatch-proxy/commit/39749fcc1870c3a230e0aee5308eb4149793a360))
+
 ## [1.0.1](https://github.com/abinnovision/github-workflow-dispatch-proxy/compare/v1.0.0...v1.0.1) (2024-10-18)
 
 
