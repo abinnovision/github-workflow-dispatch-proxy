@@ -1048,10 +1048,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@octokit/auth-callback@npm:^5.0.1":
-  version: 5.0.1
-  resolution: "@octokit/auth-callback@npm:5.0.1"
-  checksum: 10/afa2fd71e1cc238c4fc09a1a8cc3b5c8d2f231aecdb8f8be2384857cde893aa4ac697f7c6aa0b61e4d5fa1f00d41fb349ceffb938977c02ee317d5432247f6ef
+"@octokit/auth-callback@npm:^6.0.0":
+  version: 6.0.0
+  resolution: "@octokit/auth-callback@npm:6.0.0"
+  checksum: 10/d877f0b8429e9b09e421c5a5ccec62c4404d15fa7974d0edc00d69e37532d4d36789732bbf65decffe139b0ec601e7d5b8c9132c194b60b8c155802771247332
   languageName: node
   linkType: hard
 
@@ -4061,7 +4061,7 @@ __metadata:
     "@cross-policy/target-cel": "npm:^0.1.0"
     "@cross-policy/target-opa-wasm": "npm:^0.1.0"
     "@octokit/auth-app": "npm:^7.1.1"
-    "@octokit/auth-callback": "npm:^5.0.1"
+    "@octokit/auth-callback": "npm:^6.0.0"
     "@types/body-parser": "npm:^1"
     "@types/express": "npm:^4"
     "@types/node": "npm:^22.13.1"
