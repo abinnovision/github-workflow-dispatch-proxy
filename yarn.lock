@@ -4079,7 +4079,7 @@ __metadata:
     husky: "npm:^9.1.7"
     jose: "npm:^5.9.2"
     lint-staged: "npm:^15.4.3"
-    lru-cache: "npm:^11.0.1"
+    lru-cache: "npm:^11.5.1"
     nock: "npm:^14.0.1"
     nodemon: "npm:^3.1.4"
     oauth2-mock-server: "npm:^7.2.0"
@@ -5076,10 +5076,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lru-cache@npm:^11.0.1":
-  version: 11.0.1
-  resolution: "lru-cache@npm:11.0.1"
-  checksum: 10/26688a1b2a4d7fb97e9ea1ffb15348f1ab21b7110496814f5ce9190d50258fbba8c1444ae7232876deae1fc54adb230aa63dd1efc5bd47f240620ba8bf218041
+"lru-cache@npm:^11.5.1":
+  version: 11.5.1
+  resolution: "lru-cache@npm:11.5.1"
+  checksum: 10/02c4f73967d91fb101f4accf8ebac9e0541e08e16d987bdb9e9737f13e5f2c4bc33c593b98ec30e4486bf899bc97edb36fbd133684b36087336559e41edafdea
   languageName: node
   linkType: hard
 
