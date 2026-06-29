@@ -3996,10 +3996,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"get-port-please@npm:^3.1.2":
-  version: 3.1.2
-  resolution: "get-port-please@npm:3.1.2"
-  checksum: 10/ec8b8da9f816edde114b76742ec29695730094904bb0e94309081e4adf3f797b483b9d648abcf5e0511c4e21a7bf68334672b9575f8b23bccf93bf97eb517f0e
+"get-port-please@npm:^3.2.0":
+  version: 3.2.0
+  resolution: "get-port-please@npm:3.2.0"
+  checksum: 10/0bf6b28a7065a13b9ddfff5673380b508345a2a82dd6b3efc8e8f50b5fc2f0bd1f33bba57cc8ea17889fe3b6442bfb7de92f2196c2dcbb58c73709ce65033c7b
   languageName: node
   linkType: hard
 
@@ -4074,7 +4074,7 @@ __metadata:
     esbuild-node-tsc: "npm:^2.0.5"
     eslint: "npm:^9.20.1"
     express: "npm:^4.21.0"
-    get-port-please: "npm:^3.1.2"
+    get-port-please: "npm:^3.2.0"
     globals: "npm:^15.15.0"
     husky: "npm:^9.1.7"
     jose: "npm:^5.9.2"
